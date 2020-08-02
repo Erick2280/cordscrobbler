@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication with Last.fm</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.9/dist/shoelace/shoelace.css">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.9/dist/shoelace/shoelace.esm.js"></script>
+</head>
+<body>
+    <style>
+        body {
+            font-family: var(--sl-font-sans);
+            color: var(--sl-color-gray-30);
+        }
+        h1,  p {
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+        #content, #fallback-content {
+            padding-top: 64px;
+            padding-left: 16px;
+            padding-right: 16px;
+            max-width: 720px;
+            margin: auto;
+        }
+        #fallback-content {
+            display: none;
+        }
+        .message-container {
+            text-align: center;
+            padding-bottom: 8px;
+        }
+        .token-container {
+            justify-content: center;
+            display: flex;
+            align-items: center;
+            padding-bottom: 64px;         
+        }
+        #token-field {
+            font-family: var(--sl-font-mono);
+            font-size: 1.5em;
+            padding-right: 12px;
+        }
+    </style>
+
+    <div id="content">
+        <div class="message-container">
+            <h1>Just one last step :)</h1>
+            <p>Copy the token below and send it via DM to the Discord bot.</p>
+        </div>
+        <div class="token-container">
+            <code id="token-field"></code>
+            <sl-button type="primary" onclick="copyTokenToClipboard()">
+                <sl-icon slot="prefix" name="clipboard"></sl-icon>
+                <span id="token-copy-button-text">Copy</span>
+            </sl-button>
+        </div>
+        <sl-alert type="warning" open>
+            <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
+            <strong>Do not share this token with anyone.</strong><br>
+            This token can be used to perform actions on your Last.fm account on your behalf. The Discord bot asks it once to scrobble songs on your account.
+        </sl-alert>
+    </div>
+
+    <div id="fallback-content">
+        <div class="message-container">
+            <h1>Something went wrong :(</h1>
+            <p>We were unable to login with your Last.fm account. Please try again :/</p>
+        </div>
+    </div>
+
+    <script>
+        const tokenField = document.querySelector('#token-field');
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token');
+        
+        if (token) {
+            tokenField.textContent = token;
+        } else {
+            document.querySelector('#content').style.display = 'none'
+            document.querySelector('#fallback-content').style.display = 'block'
+        }
+
+        function copyTokenToClipboard() {
+            navigator.clipboard.writeText(token).then(() => {
+                document.querySelector('#token-copy-button-text').textContent = "Copied!"
+            })
+        }
+    </script>
+</body>
+</html>

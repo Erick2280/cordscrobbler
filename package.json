@@ -1,0 +1,34 @@
+{
+  "name": "discord2lastfm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "prestart": "npm run build",
+    "start": "node .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "ts-node-dev --ignore-watch node_modules src/index.ts"
+  },
+  "author": "Erick Almeida",
+  "license": "MIT",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^3.7.1",
+    "@typescript-eslint/parser": "^3.7.1",
+    "eslint": "^7.6.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "prettier": "^2.0.5",
+    "ts-node": "^8.10.2",
+    "ts-node-dev": "^1.0.0-pre.56",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/node": "^13.11.1",
+    "@types/spotify-web-api-node": "^4.0.1",
+    "discord.js": "^12.1.1",
+    "dotenv": "^8.2.0",
+    "spotify-web-api-node": "^4.0.0"
+  }
+}
