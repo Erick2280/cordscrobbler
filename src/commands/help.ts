@@ -3,7 +3,7 @@ import fs from 'fs';
 
 export const data = {
     name: 'help',
-    description: 'Shows user help.',
+    description: 'Show user help.',
     args: false
 };
 

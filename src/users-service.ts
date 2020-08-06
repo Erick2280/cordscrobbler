@@ -5,11 +5,13 @@ import { User as DiscordUser, MessageCollector } from 'discord.js';
 export class UsersService {
     private registeredUsers: RegisteredUser[];
     private registeringUsers: RegisteringUser[];
-    private lastfmService: LastfmService
+    private scrobbleCandidates: Object;
+    private lastfmService: LastfmService;
 
     constructor() {
         this.registeringUsers = [];
         this.registeredUsers = [];
+        this.scrobbleCandidates = {};
         this.lastfmService = new LastfmService();
     }
 
@@ -116,7 +118,20 @@ export class UsersService {
     }
 
     addToScrobbleQueue(track: Track, playbackData: PlaybackData) {
-    // TODO: Scrobble after 30s, cancel on songs shorter than 30s.
+        const thirtySecondsInMillis = 30000;
+        setTimeout(() => {this.dispatchScrobble(track, playbackData)}, thirtySecondsInMillis)
+        this.scrobbleCandidates[playbackData.channelId] = playbackData.timestamp;
+    }
+
+    dispatchScrobble(track: Track, playbackData: PlaybackData) {
+        if (this.scrobbleCandidates[playbackData.channelId] === playbackData.timestamp) {
+            for (const userId of playbackData.listeningUsersId) {
+                const registeredUser = this.registeredUsers.find(x => x.discordUserId === userId)
+                if (registeredUser?.isScrobbleOn) {
+                    this.lastfmService.scrobble([track], [playbackData], registeredUser.lastfmSessionKey).catch((error) => {console.error(error)})
+                }
+            }
+        }
     }
 
     // TODO: What happens if the user revoked permissions? Can the bot send a DM to update tokens?
@@ -140,6 +155,11 @@ export type RegisteringUser = {
 export type Track = {
     artist: string;
     name: string;
-    timestamp: string;
     album?: string;
+};
+
+export type ScrobbleCandidate = {
+    track: Track;
+    playbackData: PlaybackData;
+    timer: NodeJS.Timeout;
 };

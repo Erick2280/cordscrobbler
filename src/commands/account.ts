@@ -15,6 +15,7 @@ export async function execute(message: Message, args: string[], usersService: Us
 
     const registeredUser = usersService.getRegisteredUser(message.author);
 
-    message.author.send(`Hello, ${message.author}! Your Last.fm username is **${registeredUser.lastfmUserName}** and scrobbles are turned **${registeredUser.isScrobbleOn ? 'on' : 'off'}**.`)
+    message.author.send(`Hello, ${message.author}! Your Last.fm username is **${registeredUser.lastfmUserName}** and scrobbles are turned **${registeredUser.isScrobbleOn ? 'on' : 'off'}**.
+To turn it ${!registeredUser.isScrobbleOn ? 'on' : 'off'}, send **${process.env.DISCORD_BOT_PREFIX}scrobbling ${!registeredUser.isScrobbleOn ? 'on' : 'off'}**.`)
 
 }

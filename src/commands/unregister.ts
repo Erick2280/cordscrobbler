@@ -3,7 +3,7 @@ import { UsersService } from '../users-service';
 
 export const data = {
     name: 'unregister',
-    description: `Deletes your account and clear your data.`,
+    description: `Delete your account and clear your data.`,
     aliases: ['deleteaccount', 'cancelregistration'],
     args: false
 };

@@ -8,5 +8,11 @@ this.spotifyApi = new SpotifyWebApi({
 });
 
 export function parseTrack(playbackData: PlaybackData): Track {
-    return null;
+    // TODO: Better track parsing
+    const split = playbackData.title.split(' - ')
+    const track: Track = {
+        name: split[1],
+        artist: split[0],
+    }
+    return track;
 }

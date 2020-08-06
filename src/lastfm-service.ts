@@ -11,26 +11,22 @@ export class LastfmService {
 
     performRequest(params: URLSearchParams, type: 'get' | 'post', signed: boolean) {
       params.set('api_key', process.env.LASTFM_API_KEY)
+      params.set('format', 'json');
+
       if (signed) {
-        if (type === 'post') {
+        if (type === 'post' && !params.has('sk')) {
           throw new Error('SessionKeyNotProvidedOnRequest')
         }
         params.set('api_sig', this.getCallSignature(params))
       }
-
-      params.set('format', 'json');
+      const url = `${this.apiRootUrl}/?${params.toString()}`;
 
       if (type === 'get') {
-        const url = `${this.apiRootUrl}/?${params.toString()}`;
         return axios.get(url, {headers: {'User-Agent': this.userAgent}});
       }
 
       if (type === 'post') {
-        const body = {};
-        for (const [key, value] of params) {
-          body[key] = value;
-        }
-        return axios.post(this.apiRootUrl, body, {headers: {'User-Agent': this.userAgent}});
+        return axios.post(url, null, {headers: {'User-Agent': this.userAgent}});
       }
 
     }
@@ -62,7 +58,6 @@ export class LastfmService {
         let request;
         try {
            request = await this.performRequest(params, 'get', true);
-           console.log(request)
         } catch (error) {
             if (error?.response?.data?.error === 14) {
               throw new Error('LastfmTokenNotAuthorized')
@@ -87,6 +82,7 @@ export class LastfmService {
       const params = new URLSearchParams()
       
       params.set('method', 'track.scrobble')
+      params.set('sk', sessionKey)
 
       for (const [i, track] of tracks.entries()) {
         params.set(`artist[${i}]`, track.artist);
@@ -96,9 +92,13 @@ export class LastfmService {
           params.set(`album[${i}]`, track.album)
         }
       }
-      params.set(`sk`, sessionKey)
 
-      await this.performRequest(params, 'post', true)
+      try {
+        await this.performRequest(params, 'post', true)
+      } catch (error) {
+        console.error(error)
+      }
+        // TODO: Check scrobble history/queue on fail
 
     }
 

@@ -54,7 +54,6 @@ client.on('message', async (message) => {
             returnUserFriendlyErrorMessage(error, message, usersService, client);
         }
 
-        // TODO: Scrobble after 30 seconds, check scrobble history/queue on fail
         // TODO: See registered users for a given guild
         // TODO: Change user options
     }
@@ -62,7 +61,9 @@ client.on('message', async (message) => {
     if (message.channel instanceof Discord.TextChannel && message.author.bot) {
         const playbackData = dataProvidingService.lookForPlaybackData(message);
         if (playbackData) {
+            console.log(playbackData);
             const track = parseTrack(playbackData);
+            console.log(track);
             usersService.addToScrobbleQueue(track, playbackData);
         }
     }

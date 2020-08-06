@@ -14,6 +14,7 @@ export function returnUserFriendlyErrorMessage(error: Error, message: Message, u
             break;
         case 'UserAlreadyRegistered':
             message.author.send(`Seems like you're already registered :D`);
+            message.author.send(`You can view your account details by sending **${process.env.DISCORD_BOT_PREFIX}account**.`)
             break;
         case 'UserNotRegistered':
             message.author.send(`Seems like you are not registered. To start the registration process, please send **${process.env.DISCORD_BOT_PREFIX}register**.`);
@@ -32,5 +33,5 @@ export function returnUserFriendlyErrorMessage(error: Error, message: Message, u
 }
 
 export function returnExpectedCommandUsage(commandName: string, usage: string, message: Message) {
-    message.reply(`to use this command, you need to send a message in this format: **${process.env.DISCORD_BOT_PREFIX + commandName + ' ' + usage}**.`);
+    message.reply(`I didn't understand your command. To use this command, you need to send a message in this format: **${process.env.DISCORD_BOT_PREFIX + commandName + ' ' + usage}**.`);
 }

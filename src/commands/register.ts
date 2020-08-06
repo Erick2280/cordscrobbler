@@ -5,7 +5,7 @@ import { returnUserFriendlyErrorMessage } from '../error-handling';
 
 export const data = {
     name: 'register',
-    description: 'Connects your Last.fm account with this bot.',
+    description: 'Connect your Last.fm account with this bot.',
     aliases: ['login', 'r'],
     args: false
 };
