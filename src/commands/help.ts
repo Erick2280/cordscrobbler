@@ -4,13 +4,16 @@ import fs from 'fs';
 export const data = {
     name: 'help',
     description: 'Show user help.',
+    alias: ['about'],
     args: false
 };
 
 export function execute(message: Message) {
 
     let messageText =
-`__**What is this bot?**__
+`discord2lastfm v${process.env.NPM_PACKAGE_VERSION}
+
+__**What is this bot?**__
 This bot scrobble songs played by bots on your Discord server to Last.fm. I will automatically scrobble if you are on the same audio channel as the bot, on any server that I'm added to.
 To enable it for you, you'll need to log in with your Last.fm account using **${process.env.DISCORD_BOT_PREFIX}register**.
 
