@@ -102,8 +102,27 @@ export class LastfmService {
 
     }
 
-    updateNowPlaying(track: Track, sessionKey: string, durationInMillis: number) {
-      // TODO: Update now playing feature
+    async updateNowPlaying(track: Track, sessionKey: string, durationInSeconds?: number) {
+      const params = new URLSearchParams()
+      
+      params.set('method', 'track.updatenowplaying')
+      params.set('sk', sessionKey)
+
+      params.set(`artist`, track.artist);
+      params.set(`track`, track.name);
+      if (track.album) {
+        params.set(`album`, track.album)
+      }
+      if (durationInSeconds) {
+        params.set(`duration`, durationInSeconds.toString())
+      }
+
+      try {
+        await this.performRequest(params, 'post', true)
+      } catch (error) {
+        console.error(error)
+      }
+      // TODO: Error handling
     }
 
     getCallSignature(params: URLSearchParams) {

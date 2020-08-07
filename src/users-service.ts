@@ -119,6 +119,12 @@ export class UsersService {
 
     addToScrobbleQueue(track: Track, playbackData: PlaybackData) {
         const thirtySecondsInMillis = 30000;
+        for (const userId of playbackData.listeningUsersId) {
+            const registeredUser = this.registeredUsers.find(x => x.discordUserId === userId)
+            if (registeredUser?.isScrobbleOn) {
+                this.lastfmService.updateNowPlaying(track, registeredUser.lastfmSessionKey).catch((error) => {console.error(error)})
+            }
+        }
         setTimeout(() => {this.dispatchScrobble(track, playbackData)}, thirtySecondsInMillis)
         this.scrobbleCandidates[playbackData.channelId] = playbackData.timestamp;
     }
