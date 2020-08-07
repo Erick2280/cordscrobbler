@@ -1,5 +1,6 @@
 import * as Discord from 'discord.js';
 import * as dotenv from 'dotenv';
+import * as firebaseAdmin from 'firebase-admin';
 
 import fs from 'fs';
 
@@ -8,12 +9,21 @@ import { UsersService } from './users-service';
 
 import { parseTrack } from './track-parser';
 import { returnExpectedCommandUsage, returnUserFriendlyErrorMessage } from './error-handling';
+import { DatabaseService } from './database-service';
 
+console.log('Configuring environment variables...')
 dotenv.config();
+
+console.log('Connecting to Firebase...')
+firebaseAdmin.initializeApp({
+    credential: firebaseAdmin.credential.cert(JSON.parse(Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_KEY, 'base64').toString('utf-8'))),
+    databaseURL: 'https://discord2lastfm.firebaseio.com'
+});
 
 const client = new Discord.Client();
 const dataProvidingService = new DataProvidingService();
-const usersService = new UsersService();
+const databaseService = new DatabaseService(firebaseAdmin.firestore());
+const usersService = new UsersService(databaseService);
 
 const commands = new Discord.Collection<string, any>();
 const commandsFolder = __dirname + '/commands';
@@ -25,7 +35,7 @@ for (const file of commandFiles) {
 }
 
 client.once('ready', () => {
-    console.log(`Logged in as ${client.user.tag}!`);
+    console.log(`Bot ready. Connected to Discord as ${client.user.tag}.`);
 });
 
 client.on('message', async (message) => {
@@ -70,4 +80,8 @@ client.on('message', async (message) => {
 
 });
 
-client.login(process.env.DISCORD_TOKEN);
+console.log('Retrieving data from database...');
+usersService.retrieveAllRegisteredUsersFromDatabase().then(() => {
+    console.log('Connecting to Discord...');
+    client.login(process.env.DISCORD_TOKEN);
+})

@@ -27,9 +27,9 @@ export async function execute(message: Message, args: string[], usersService: Us
             );
         
             collector.on('collect', async responseMessage => {
-                if (responseMessage.content.toLowerCase() === 'ok') {
+                if (responseMessage.content.toLowerCase() === 'yes') {
                     message.author.send(`Sad to see you go :/ I'm proceeding with your account deletion.`)
-                    usersService.unregisterUser(message.author)
+                    await usersService.unregisterUser(message.author)
                     message.author.send(`Your account was successfully deleted.`)
                 } else if (responseMessage.content.toLowerCase() !== process.env.DISCORD_BOT_PREFIX + data.name)  {
                     message.author.send(`Your account deletion was cancelled. No further action was taken.`)

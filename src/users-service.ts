@@ -1,18 +1,25 @@
 import { PlaybackData } from './data-providing-service';
 import { LastfmService } from './lastfm-service';
 import { User as DiscordUser, MessageCollector } from 'discord.js';
+import { DatabaseService } from './database-service';
 
 export class UsersService {
     private registeredUsers: RegisteredUser[];
     private registeringUsers: RegisteringUser[];
     private scrobbleCandidates: Object;
     private lastfmService: LastfmService;
+    private databaseService: DatabaseService;
 
-    constructor() {
+    constructor(databaseService: DatabaseService) {
         this.registeringUsers = [];
         this.registeredUsers = [];
         this.scrobbleCandidates = {};
         this.lastfmService = new LastfmService();
+        this.databaseService = databaseService;
+    }
+
+    async retrieveAllRegisteredUsersFromDatabase() {
+        this.registeredUsers = await this.databaseService.retrieveAllRegisteredUsers();
     }
 
     async startRegistrationProcess(discordUser: DiscordUser) {
@@ -62,6 +69,7 @@ export class UsersService {
                 isScrobbleOn: true
             };
             this.registeredUsers.push(registeredUser);
+            await this.databaseService.setRegisteredUser(registeredUser);
             return Object.create(registeredUser);
 
         } finally {
@@ -100,21 +108,23 @@ export class UsersService {
     }
 
     toggleScrobblingForUser(discordUser: DiscordUser, isScrobbledOn: boolean) {
-        const user = this.registeredUsers.find(x => x.discordUserId === discordUser.id);
-        if (!user) {
+        const registeredUser = this.registeredUsers.find(x => x.discordUserId === discordUser.id);
+        if (!registeredUser) {
             throw new Error('UserNotRegistered')
         }
-        user.isScrobbleOn = isScrobbledOn;
+        registeredUser.isScrobbleOn = isScrobbledOn;
+        this.databaseService.setRegisteredUser(registeredUser);
     }
 
-    unregisterUser(discordUser) {
-        const registeredUserIndex = this.registeredUsers.findIndex(x => x.discordUserId === discordUser.userId);
+    async unregisterUser(discordUser: DiscordUser) {
+        const registeredUserIndex = this.registeredUsers.findIndex(x => x.discordUserId === discordUser.id);
         
         if (registeredUserIndex === -1) {
             throw new Error('UserNotRegistered')
         }
 
         this.registeredUsers.splice(registeredUserIndex, 1);
+        await this.databaseService.deleteRegisteredUser(discordUser.id);
     }
 
     addToScrobbleQueue(track: Track, playbackData: PlaybackData) {
