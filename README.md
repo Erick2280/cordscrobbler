@@ -5,6 +5,8 @@
 </p>
 <p>Last.fm scrobbler for songs played by bots on your Discord server.</p>
 
+![Build status](https://github.com/Erick2280/discord2lastfm/workflows/build/badge.svg)
+
 </div>
 
 ---
