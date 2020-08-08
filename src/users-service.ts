@@ -1,7 +1,8 @@
 import { PlaybackData } from './data-providing-service';
 import { LastfmService } from './lastfm-service';
-import { User as DiscordUser, MessageCollector } from 'discord.js';
+import { User as DiscordUser, MessageCollector, Message, TextChannel } from 'discord.js';
 import { DatabaseService } from './database-service';
+import * as utils from './utils';
 
 export class UsersService {
     private registeredUsers: RegisteredUser[];
@@ -127,27 +128,47 @@ export class UsersService {
         await this.databaseService.deleteRegisteredUser(discordUser.id);
     }
 
-    addToScrobbleQueue(track: Track, playbackData: PlaybackData) {
+    async addToScrobbleQueue(track: Track, playbackData: PlaybackData, messageChannel: TextChannel) {
         const thirtySecondsInMillis = 30000;
+
+        this.scrobbleCandidates[playbackData.channelId] = playbackData.timestamp;
+
+        if (!track) {
+            return
+        }
+
+        const nowScrobblingMessage = await utils.sendNowScrobblingMessageEmbed(track, messageChannel);
+        
         for (const userId of playbackData.listeningUsersId) {
             const registeredUser = this.registeredUsers.find(x => x.discordUserId === userId)
             if (registeredUser?.isScrobbleOn) {
                 this.lastfmService.updateNowPlaying(track, registeredUser.lastfmSessionKey).catch((error) => {console.error(error)})
             }
         }
-        setTimeout(() => {this.dispatchScrobble(track, playbackData)}, thirtySecondsInMillis)
-        this.scrobbleCandidates[playbackData.channelId] = playbackData.timestamp;
+        
+        setTimeout(() => {this.dispatchScrobble(track, playbackData, messageChannel, nowScrobblingMessage)}, thirtySecondsInMillis)
     }
 
-    dispatchScrobble(track: Track, playbackData: PlaybackData) {
+    async dispatchScrobble(track: Track, playbackData: PlaybackData, messageChannel: TextChannel, nowScrobblingMessage: Message) {
+        const lastfmUsers: string[] = [];
+        const skippedUsers = nowScrobblingMessage.reactions.cache.get('🚫').users.cache;
+
         if (this.scrobbleCandidates[playbackData.channelId] === playbackData.timestamp) {
             for (const userId of playbackData.listeningUsersId) {
                 const registeredUser = this.registeredUsers.find(x => x.discordUserId === userId)
-                if (registeredUser?.isScrobbleOn) {
+                if (registeredUser?.isScrobbleOn && !skippedUsers.get(registeredUser.discordUserId)) {
                     this.lastfmService.scrobble([track], [playbackData], registeredUser.lastfmSessionKey).catch((error) => {console.error(error)})
+                    lastfmUsers.push(registeredUser.lastfmUserName);
                 }
             }
+
+            await utils.deleteMessage(nowScrobblingMessage);
+            await utils.sendSuccessfullyScrobbledMessageEmbed(track, lastfmUsers, messageChannel);
+
+        } else {
+            await utils.editEmbedMessageToSkipped(nowScrobblingMessage);
         }
+
     }
 
     // TODO: What happens if the user revoked permissions? Can the bot send a DM to update tokens?
@@ -172,6 +193,7 @@ export type Track = {
     artist: string;
     name: string;
     album?: string;
+    coverArtUrl?: string;
 };
 
 export type ScrobbleCandidate = {

@@ -1,13 +1,14 @@
 import * as Discord from 'discord.js';
 import * as dotenv from 'dotenv';
 import * as firebaseAdmin from 'firebase-admin';
+import * as utils from './utils';
 
 import fs from 'fs';
+import SpotifyWebApi from 'spotify-web-api-node';
 
 import { DataProvidingService } from './data-providing-service';
 import { UsersService } from './users-service';
 
-import { parseTrack } from './track-parser';
 import { returnExpectedCommandUsage, returnUserFriendlyErrorMessage } from './error-handling';
 import { DatabaseService } from './database-service';
 
@@ -18,6 +19,11 @@ console.log('Connecting to Firebase...')
 firebaseAdmin.initializeApp({
     credential: firebaseAdmin.credential.cert(JSON.parse(Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_KEY, 'base64').toString('utf-8'))),
     databaseURL: 'https://discord2lastfm.firebaseio.com'
+});
+
+const spotifyApi = new SpotifyWebApi({
+    clientId: process.env.SPOTIFY_CLIENT_ID,
+    clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
 });
 
 const client = new Discord.Client();
@@ -35,6 +41,10 @@ for (const file of commandFiles) {
 }
 
 client.once('ready', () => {
+    client.user.setActivity({
+        name: `${process.env.DISCORD_BOT_PREFIX}help`,
+        type: 'LISTENING'
+    });
     console.log(`Bot ready. Connected to Discord as ${client.user.tag}.`);
 });
 
@@ -65,16 +75,13 @@ client.on('message', async (message) => {
         }
 
         // TODO: See registered users for a given guild
-        // TODO: Change user options
     }
 
     if (message.channel instanceof Discord.TextChannel && message.author.bot) {
         const playbackData = dataProvidingService.lookForPlaybackData(message);
         if (playbackData) {
-            console.log(playbackData);
-            const track = parseTrack(playbackData);
-            console.log(track);
-            usersService.addToScrobbleQueue(track, playbackData);
+            const track = await utils.parseTrack(playbackData, spotifyApi);
+            await usersService.addToScrobbleQueue(track, playbackData, message.channel);
         }
     }
 
