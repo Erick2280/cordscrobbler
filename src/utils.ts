@@ -114,7 +114,7 @@ export function deleteMessage(message: Message) {
 }
 
 export function editEmbedMessageToSkipped(message: Message) {
-    return message.edit(message.embeds[0].setTitle('Skipped'))
+    return message.edit(message.embeds[0].setTitle('Skipped').setFooter(''))
 }
 
 export function sendSuccessfullyScrobbledMessageEmbed(track: Track, lastfmUsers: string[], discordChannel: TextChannel) {
