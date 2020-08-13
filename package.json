@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "genversion dist/lib/version.js && tsc",
     "start": "node .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "ts-node-dev --ignore-watch node_modules src/index.ts"
@@ -12,24 +12,25 @@
   "author": "Erick Almeida",
   "license": "MIT",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^3.7.1",
-    "@typescript-eslint/parser": "^3.7.1",
+    "@typescript-eslint/eslint-plugin": "^3.9.0",
+    "@typescript-eslint/parser": "^3.9.0",
     "eslint": "^7.6.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
+    "genversion": "^2.2.1",
     "prettier": "^2.0.5",
     "ts-node": "^8.10.2",
     "ts-node-dev": "^1.0.0-pre.56",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.7"
   },
   "dependencies": {
     "@types/dotenv": "^8.2.0",
-    "@types/node": "^13.11.1",
+    "@types/node": "^14.0.27",
     "@types/spotify-web-api-node": "^4.0.1",
     "axios": "^0.19.2",
     "crypto-js": "^4.0.0",
     "date-fns": "^2.15.0",
-    "discord.js": "^12.1.1",
+    "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
     "firebase-admin": "^9.0.0",
     "spotify-web-api-node": "^4.0.0"
