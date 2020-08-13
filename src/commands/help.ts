@@ -11,7 +11,7 @@ export const data = {
 export function execute(message: Message) {
 
     let messageText =
-`discord2lastfm v${process.env.NPM_PACKAGE_VERSION}
+`discord2lastfm v${process.env.NPM_PACKAGE_VERSION ?? require('../lib/version.js')}
 
 __**What is this bot?**__
 This bot scrobbles songs played by other bots on your Discord server to Last.fm. I will automatically scrobble if you are on the same audio channel as the bot, on any server that I'm added to.
