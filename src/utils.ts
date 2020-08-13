@@ -38,6 +38,7 @@ export async function parseTrack(playbackData: PlaybackData, spotifyApi: Spotify
             return {
                 artist: spotifyTrack.body.artists[0].name,
                 name: spotifyTrack.body.name,
+                durationInMillis: spotifyTrack.body.duration_ms,
                 album: spotifyTrack.body.album.name,
                 coverArtUrl: spotifyTrack.body.album.images[0].url
             }
@@ -74,6 +75,7 @@ export async function parseTrack(playbackData: PlaybackData, spotifyApi: Spotify
             return {
                 artist: spotifyTrack.body.tracks.items?.[0].artists?.[0].name,
                 name: spotifyTrack.body.tracks.items?.[0].name,
+                durationInMillis: spotifyTrack.body.tracks.items?.[0].duration_ms,
                 album: spotifyTrack.body.tracks.items?.[0].album.name,
                 coverArtUrl: spotifyTrack.body.tracks.items?.[0].album.images[0].url
             }

@@ -36,7 +36,6 @@ export class UsersService {
         const lastfmRequestToken = await this.lastfmService.fetchRequestToken();
         const registeringUser: RegisteringUser = {
             discordUserId: discordUser.id,
-            discordUserName: discordUser.username,
             lastfmRequestToken
         }
         this.registeringUsers.push(registeringUser);
@@ -64,7 +63,6 @@ export class UsersService {
             const lastfmSessionResponse = await this.lastfmService.getSession(registeringUser.lastfmRequestToken)
             const registeredUser: RegisteredUser = {
                 discordUserId: discordUser.id,
-                discordUserName: discordUser.username,
                 lastfmSessionKey: lastfmSessionResponse.sessionKey,
                 lastfmUserName: lastfmSessionResponse.userName,
                 isScrobbleOn: true
@@ -130,12 +128,17 @@ export class UsersService {
 
     async addToScrobbleQueue(track: Track, playbackData: PlaybackData, messageChannel: TextChannel) {
         const thirtySecondsInMillis = 30000;
-
+        const fourMinutesInMillis = 240000;
+        
         this.scrobbleCandidates[playbackData.channelId] = playbackData.timestamp;
-
-        if (!track) {
+        
+        if (!track || track.durationInMillis < thirtySecondsInMillis) {
             return
         }
+
+        const timeUntilScrobbling = Math.min(
+            Math.floor(track.durationInMillis / 2), fourMinutesInMillis
+        );
 
         const nowScrobblingMessage = await utils.sendNowScrobblingMessageEmbed(track, messageChannel);
         
@@ -146,7 +149,7 @@ export class UsersService {
             }
         }
         
-        setTimeout(() => {this.dispatchScrobble(track, playbackData, messageChannel, nowScrobblingMessage)}, thirtySecondsInMillis)
+        setTimeout(() => {this.dispatchScrobble(track, playbackData, messageChannel, nowScrobblingMessage)}, timeUntilScrobbling)
     }
 
     async dispatchScrobble(track: Track, playbackData: PlaybackData, messageChannel: TextChannel, nowScrobblingMessage: Message) {
@@ -176,7 +179,6 @@ export class UsersService {
 
 export type RegisteredUser = {
     discordUserId: string;
-    discordUserName: string;
     lastfmUserName: string;
     lastfmSessionKey: string;
     isScrobbleOn: boolean;
@@ -184,7 +186,6 @@ export type RegisteredUser = {
 
 export type RegisteringUser = {
     discordUserId: string;
-    discordUserName: string;
     messageCollector?: MessageCollector;
     lastfmRequestToken: string;
 }
@@ -192,6 +193,7 @@ export type RegisteringUser = {
 export type Track = {
     artist: string;
     name: string;
+    durationInMillis: number
     album?: string;
     coverArtUrl?: string;
 };
