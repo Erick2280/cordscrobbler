@@ -3,6 +3,8 @@ import { PlaybackData } from './data-providing-service';
 import { Track } from './users-service';
 import { TextChannel, MessageEmbed, Message } from 'discord.js';
 
+const redColorHex = '#E31B23'
+
 export async function parseTrack(playbackData: PlaybackData, spotifyApi: SpotifyWebApi): Promise<Track> {
     // Based on the implementation of https://github.com/web-scrobbler/web-scrobbler/blob/master/src/core/content/util.js
 
@@ -91,6 +93,7 @@ export async function parseTrack(playbackData: PlaybackData, spotifyApi: Spotify
 
 export async function sendNowScrobblingMessageEmbed(track: Track, discordChannel: TextChannel) {
     const nowScrobblingMessageEmbed = new MessageEmbed()
+    .setColor(redColorHex)
     .setTitle('Now scrobbling')
     .addField('Artist', track.artist)
     .addField('Track', track.name)
@@ -132,6 +135,7 @@ export function sendSuccessfullyScrobbledMessageEmbed(track: Track, lastfmUsers:
     successfullyScrobbledEmbed
         .addField('Artist', track.artist)
         .addField('Track', track.name)
+        .setColor(redColorHex)
     
     if (track?.album) {
         successfullyScrobbledEmbed.addField('Album', track.album)
