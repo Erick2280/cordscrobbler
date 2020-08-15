@@ -41,7 +41,6 @@ Remember to keep these tokens in a safe place.
 
 You can also change the bot prefix by replacing `-d2lfm `.
 
-
 ## Issues
 
 If you find any problems during the bot usage, feel free to open an [issue](https://github.com/Erick2280/discord2lastfm/issues) here on GitHub. PRs are welcome too!

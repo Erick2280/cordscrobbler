@@ -65,6 +65,7 @@ export class UsersService {
                 discordUserId: discordUser.id,
                 lastfmSessionKey: lastfmSessionResponse.sessionKey,
                 lastfmUserName: lastfmSessionResponse.userName,
+                registrationTimestamp: Date.now(),
                 isScrobbleOn: true
             };
             this.registeredUsers.push(registeredUser);
@@ -181,6 +182,7 @@ export type RegisteredUser = {
     discordUserId: string;
     lastfmUserName: string;
     lastfmSessionKey: string;
+    registrationTimestamp: number;
     isScrobbleOn: boolean;
 };
 
