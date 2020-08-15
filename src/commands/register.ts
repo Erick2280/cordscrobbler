@@ -23,12 +23,12 @@ export async function execute(message: Message, args: string[], usersService: Us
     await usersService.startRegistrationProcess(message.author)
 
     message.author.send(`
-    Follow the steps below to complete your registration:
+Follow the steps below to complete your registration:
 
-    1. Read the Privacy Policy for this service, available at https://github.com/Erick2280/discord2lastfm/tree/release/docs/PRIVACY_POLICY.md.
-    2. Connect your Last.fm account entering ${usersService.getRegistrationProcessLoginUrl(message.author)}.
+1. Read the Privacy Policy for this service, available at https://github.com/Erick2280/discord2lastfm/tree/release/docs/PRIVACY_POLICY.md.
+2. Connect your Last.fm account entering ${usersService.getRegistrationProcessLoginUrl(message.author)}.
     
-    If you **agree with the Privacy Policy** and **completed these steps**, please **send an _ok_ message to me** here. If you do not agree with these terms, or want to cancel the registration process, please send a _cancel_ message to me.
+If you **agree with the Privacy Policy** and **completed these steps**, please **send an _ok_ message to me** here. If you do not agree with these terms, or want to cancel the registration process, please send a _cancel_ message to me.
     `);
 
     const dmChannel = await message.author.createDM();
