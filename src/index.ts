@@ -48,6 +48,16 @@ client.once('ready', () => {
     console.log(`Bot ready. Connected to Discord as ${client.user.tag}.`);
 });
 
+client.on('messageReactionAdd', (reaction, user) => {
+    //console.log(reaction.emoji);
+    if((reaction.emoji.name === "➡️" || reaction.emoji.name === "⬅️")  && !user.bot) {
+        utils.updatePrivacyPolicyMessageEmbed(reaction, user);
+    }
+    else if(reaction.emoji.name === "✅" && !user.bot){
+        utils.completeRegistration(reaction, user, usersService, client);
+    }
+});
+
 client.on('message', async (message) => {
     if ((message.channel instanceof Discord.DMChannel || message.channel instanceof Discord.TextChannel) &&
         !message.author.bot &&

@@ -33,6 +33,7 @@
     "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
     "firebase-admin": "^9.0.0",
+    "node": "^14.8.0",
     "spotify-web-api-node": "^4.0.0"
   }
 }
