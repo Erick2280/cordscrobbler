@@ -17,6 +17,10 @@ This bot scrobbles songs played by other bots on your Discord server to Last.fm.
 
 To enable it for you, you'll need to send a message to the bot with _-d2lfm register_ and log in with your Last.fm account.
 
+## Supported integrations
+
+- [Groovy Bot](https://groovy.bot/)
+
 ## Adding to your server
 
 Just [click here to add to your server](https://discord.com/oauth2/authorize?client_id=739266400476201061&permissions=511040&scope=bot) :)
@@ -40,6 +44,13 @@ Replace the following fields:
 Remember to keep these tokens in a safe place.
 
 You can also change the bot prefix by replacing `-d2lfm `.
+
+Finally, to start the bot, run:
+
+    npm run build
+    npm start
+
+Alternatively, you can run `npm run watch` while testing to automatically reload on file changes.
 
 ## Issues
 
