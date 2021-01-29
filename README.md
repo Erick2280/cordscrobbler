@@ -3,9 +3,15 @@
 <p>
 	<img width="256" src="./assets/icon-and-name.svg" alt="discord2lastfm"/>
 </p>
-<p>Last.fm scrobbler for songs played by bots on your Discord server.</p>
+<p>Last.fm scrobbler for songs played by other bots on your Discord server.</p>
 
 ![Build status](https://github.com/Erick2280/discord2lastfm/workflows/build/badge.svg)
+
+<p>
+    <a href="https://discord.com/oauth2/authorize?client_id=739266400476201061&permissions=511040&scope=bot">
+        <img width="400" src="./assets/add-to-your-server-button.svg" alt="Add to your server"/>
+    </a>
+</p>
 
 </div>
 
@@ -38,7 +44,7 @@ Then, on the project root folder, create a new `.env` file and copy the contents
 Replace the following fields:
 - `<your-discord-bot-token>`: The Discord token for your bot, which can be obtained from the [Discord developer portal](https://discordapp.com/developers/applications). 
 - `<your-spotify-app-client-id>` and `<your-spotify-app-client-secret>`: Tokens from your Spotify integration, which can be obtained on the [Spotify developer dashboard](https://developer.spotify.com/dashboard/applications). This bot uses the Spotify API to look for track information.
-- `<your-lastfm-api-key>` and `<your-lastfm-shared-secret>`: The tokens from Last.fm API, which can be obtained [here](https://www.last.fm/api/account/create).
+- `<your-lastfm-api-key>` and `<your-lastfm-shared-secret>`: The tokens from Last.fm API, which can be obtained on the [Last.fm create API account form](https://www.last.fm/api/account/create).
 - `<service-account-key-file-base64>`: A service account key file encoded in base64 from a Firebase project. This bot uses Firebase Firestore to store user data.
 
 Remember to keep these tokens in a safe place.
@@ -54,6 +60,6 @@ Alternatively, you can run `npm run watch` while testing to automatically reload
 
 ## Issues
 
-If you find any problems during the bot usage, feel free to open an [issue](https://github.com/Erick2280/discord2lastfm/issues) here on GitHub. PRs are welcome too!
+If you find any problems during the bot usage, feel free to [open an issue](https://github.com/Erick2280/discord2lastfm/issues) here on GitHub. PRs are welcome too!
 
 You can also contact me on Discord :) My username is **Erick2280#4015**.
