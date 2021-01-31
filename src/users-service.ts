@@ -1,6 +1,6 @@
 import { PlaybackData } from './data-providing-service';
 import { LastfmService } from './lastfm-service';
-import { User as DiscordUser, MessageCollector, Message, TextChannel } from 'discord.js';
+import { User as DiscordUser, MessageCollector, Message, TextChannel, PartialUser, ReactionCollector } from 'discord.js';
 import { DatabaseService } from './database-service';
 import * as utils from './utils';
 
@@ -41,7 +41,7 @@ export class UsersService {
         this.registeringUsers.push(registeringUser);
     }
 
-    getRegistrationProcessLoginUrl(discordUser: DiscordUser): string {
+    getRegistrationProcessLoginUrl(discordUser: DiscordUser | PartialUser): string {
         const registeringUser = this.registeringUsers.find(x => x.discordUserId === discordUser.id)
 
         if (!registeringUser) {
@@ -51,13 +51,13 @@ export class UsersService {
         return this.lastfmService.getUserLoginUrl(registeringUser.lastfmRequestToken)
     } 
 
-    cancelRegistrationProcess(discordUser: DiscordUser) {
+    cancelRegistrationProcess(discordUser: DiscordUser | PartialUser) {
         const registeringUser = this.registeringUsers.find(x => x.discordUserId === discordUser.id)
         this.removeUserIdFromRegisteringUsersArray(discordUser.id);
-        registeringUser?.messageCollector?.stop();
+        registeringUser?.reactionCollector?.stop();
     }
 
-    async completeRegistrationProcess(discordUser: DiscordUser): Promise<RegisteredUser> {
+    async completeRegistrationProcess(discordUser: DiscordUser | PartialUser): Promise<RegisteredUser> {
         const registeringUser = this.registeringUsers.find(x => x.discordUserId === discordUser.id)
         try {
             const lastfmSessionResponse = await this.lastfmService.getSession(registeringUser.lastfmRequestToken)
@@ -77,14 +77,14 @@ export class UsersService {
         }
     }
 
-    isUserInRegistrationProcess(discordUser: DiscordUser): boolean {
+    isUserInRegistrationProcess(discordUser: DiscordUser | PartialUser): boolean {
         return this.registeringUsers.findIndex(x => x.discordUserId === discordUser.id) !== -1;
     }
 
-    appendCollectorOnRegistrationProcess(discordUser: DiscordUser, messageCollector: MessageCollector) {
+    appendCollectorOnRegistrationProcess(discordUser: DiscordUser | PartialUser, reactionCollector: ReactionCollector) {
         const registeringUser = this.registeringUsers.find(x => x.discordUserId === discordUser.id)
         if (registeringUser) {
-            registeringUser.messageCollector = messageCollector;
+            registeringUser.reactionCollector = reactionCollector;
         }
     }
 
@@ -188,7 +188,7 @@ export type RegisteredUser = {
 
 export type RegisteringUser = {
     discordUserId: string;
-    messageCollector?: MessageCollector;
+    reactionCollector?: ReactionCollector;
     lastfmRequestToken: string;
 }
 
