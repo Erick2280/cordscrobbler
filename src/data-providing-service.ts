@@ -1,5 +1,6 @@
 import { Message } from 'discord.js';
 import { GroovyDataProvider } from './music-providers/groovy';
+import { HydraDataProvider } from './music-providers/hydra';
 
 export interface DataProvider {
     providerName: string;
@@ -24,7 +25,7 @@ export class DataProvidingService {
         if (availableDataProviders) {
             this.availableDataProviders = availableDataProviders;
         } else {
-            this.availableDataProviders = [new GroovyDataProvider()];
+            this.availableDataProviders = [new GroovyDataProvider(), new HydraDataProvider()];
         }
     }
 

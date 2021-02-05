@@ -26,6 +26,7 @@ To enable it for you, you'll need to send a message to the bot with _-d2lfm regi
 ## Supported integrations
 
 - [Groovy Bot](https://groovy.bot/)
+- [Hydra Bot](https://hydra.bot/)
 
 ## Adding to your server
 
