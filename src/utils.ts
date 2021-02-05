@@ -9,8 +9,11 @@ export async function parseTrack(playbackData: PlaybackData, spotifyApi: Spotify
     // Based on the implementation of https://github.com/web-scrobbler/web-scrobbler/blob/master/src/core/content/util.js
 
     const removeStrings = [
-        '(official)', '(music video)', 'videoclipe oficial', 'official music video', '(official music)', '(official video)', 'm/v', ' mv', 'clipe oficial', 'color coded', '…', 'audio only'
-    ]
+        '(official)', '(music video)', 'videoclipe oficial', 'official music video', '(official music)', '(official video)', '(videoclip)', '(videoclipe)', 'm/v', ' mv', 'clipe oficial', 'color coded', '…', 'audio only', 'ft.', 'feat.'
+    ];
+    const removeChars = [
+        '-', '&', ',', '(', ')', '\"', '\''
+    ];
     const spotifyTrackIdRegExp = /(?<=spotify:track:|open\.spotify\.com\/track\/|)[a-zA-Z0-9]{22}/;
     const youtubeTitleRegExps = [
         // Artist "Track", Artist: "Track", Artist - "Track", etc.
@@ -69,10 +72,15 @@ export async function parseTrack(playbackData: PlaybackData, spotifyApi: Spotify
         }
     }
 
+    // Remove certain chars after regexps matching
+    for (const string of removeChars) {
+        filteredTitle = filteredTitle.split(string).join(' ');
+    }
+
     try {
         await requestSpotifyApiToken(spotifyApi);
         const spotifyTrack = await spotifyApi.searchTracks(filteredTitle);
-        
+
         if (spotifyTrack?.body?.tracks?.items[0]) {
             return {
                 artist: spotifyTrack.body.tracks.items?.[0].artists?.[0].name,
@@ -86,7 +94,6 @@ export async function parseTrack(playbackData: PlaybackData, spotifyApi: Spotify
 
     return null
         
-    // TODO: Better track parsing
     // TODO: Allow disable scrobbling for tracks not provided by Spotify
 
 }
