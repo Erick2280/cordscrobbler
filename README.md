@@ -47,6 +47,7 @@ Replace the following fields:
 - `<your-spotify-app-client-id>` and `<your-spotify-app-client-secret>`: Tokens from your Spotify integration, which can be obtained on the [Spotify developer dashboard](https://developer.spotify.com/dashboard/applications). This bot uses the Spotify API to look for track information.
 - `<your-lastfm-api-key>` and `<your-lastfm-shared-secret>`: The tokens from Last.fm API, which can be obtained on the [Last.fm create API account form](https://www.last.fm/api/account/create).
 - `<service-account-key-file-base64>`: A service account key file encoded in base64 from a Firebase project. This bot uses Firebase Firestore to store user data.
+- `<your-firebase-database-url>`:  The Firebase Database URL from a Firebase project.
 
 Remember to keep these tokens in a safe place.
 
