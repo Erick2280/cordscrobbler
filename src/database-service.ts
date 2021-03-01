@@ -1,4 +1,4 @@
-import { RegisteredUser } from "./users-service";
+import { RegisteredUser } from './users-service';
 
 export class DatabaseService {
     private firestore: FirebaseFirestore.Firestore
@@ -6,7 +6,7 @@ export class DatabaseService {
 
     constructor(firestore: FirebaseFirestore.Firestore) {
         this.firestore = firestore;
-        this.registeredUsersRef = firestore.collection('registeredUsers') as FirebaseFirestore.CollectionReference<RegisteredUser>;
+        this.registeredUsersRef = this.firestore.collection('registeredUsers') as FirebaseFirestore.CollectionReference<RegisteredUser>;
     }
 
     async retrieveAllRegisteredUsers() {

@@ -17,6 +17,8 @@ __**What is this bot?**__
 This bot scrobbles songs played by other bots on your Discord server to Last.fm. I will automatically scrobble if you are on the same audio channel as the bot, on any server that I'm added to.
 To enable it for you, you'll need to send a message to me with **${process.env.DISCORD_BOT_PREFIX}register** and log in with your Last.fm account.
 
+Some bots require additional configuration. Please send **${process.env.DISCORD_BOT_PREFIX}supportedbots** for further help on this.
+
 __**Commands**__`;
     const commandsFolder = __dirname;
     const commandFiles = fs.readdirSync(commandsFolder).filter(file => file.endsWith('.js') || file.endsWith('.ts'));

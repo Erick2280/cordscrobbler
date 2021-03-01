@@ -18,7 +18,7 @@ dotenv.config();
 console.log('Connecting to Firebase...')
 firebaseAdmin.initializeApp({
     credential: firebaseAdmin.credential.cert(JSON.parse(Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_KEY, 'base64').toString('utf-8'))),
-    databaseURL: 'https://discord2lastfm.firebaseio.com'
+    databaseURL: process.env.FIREBASE_DATABASE_URL
 });
 
 const spotifyApi = new SpotifyWebApi({

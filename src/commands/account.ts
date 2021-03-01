@@ -3,8 +3,8 @@ import { UsersService } from '../users-service';
 
 export const data = {
     name: 'account',
-    description: 'View your registration details.',
-    aliases: ['me'],
+    description: 'View your registration details and preferences.',
+    aliases: ['me', 'preferences'],
     args: false
 };
 

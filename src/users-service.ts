@@ -7,14 +7,14 @@ import * as utils from './utils';
 export class UsersService {
     private registeredUsers: RegisteredUser[];
     private registeringUsers: RegisteringUser[];
-    private scrobbleCandidates: Object;
+    private channelLastScrobbleCandidateTimestamp: Map<String, Date>;
     private lastfmService: LastfmService;
     private databaseService: DatabaseService;
 
     constructor(databaseService: DatabaseService) {
         this.registeringUsers = [];
         this.registeredUsers = [];
-        this.scrobbleCandidates = {};
+        this.channelLastScrobbleCandidateTimestamp = new Map();
         this.lastfmService = new LastfmService();
         this.databaseService = databaseService;
     }
@@ -131,7 +131,7 @@ export class UsersService {
         const thirtySecondsInMillis = 30000;
         const fourMinutesInMillis = 240000;
         
-        this.scrobbleCandidates[playbackData.channelId] = playbackData.timestamp;
+        this.channelLastScrobbleCandidateTimestamp.set(playbackData.channelId, playbackData.timestamp);
         
         if (!track || track.durationInMillis < thirtySecondsInMillis) {
             return
@@ -157,7 +157,7 @@ export class UsersService {
         const lastfmUsers: string[] = [];
         const skippedUsers = nowScrobblingMessage.reactions.cache.get('🚫').users.cache;
 
-        if (this.scrobbleCandidates[playbackData.channelId] === playbackData.timestamp) {
+        if (this.channelLastScrobbleCandidateTimestamp.get(playbackData.channelId) === playbackData.timestamp) {
             for (const userId of playbackData.listeningUsersId) {
                 const registeredUser = this.registeredUsers.find(x => x.discordUserId === userId)
                 if (registeredUser?.isScrobbleOn && !skippedUsers.get(registeredUser.discordUserId)) {
