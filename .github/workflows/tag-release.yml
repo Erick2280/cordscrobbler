@@ -11,8 +11,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
-        with:
-          token: ${{ steps.generate_token.outputs.token }}
 
       - name: Tag release
         uses: butlerlogic/action-autotag@stable
