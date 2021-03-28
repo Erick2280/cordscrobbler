@@ -11,7 +11,7 @@ export const data = {
 export function execute(message: Message) {
 
     let messageText =
-`discord2lastfm v${process.env.NPM_PACKAGE_VERSION ?? require('../lib/version.js')}
+`Cordscrobbler v${process.env.NPM_PACKAGE_VERSION ?? require('../lib/version.js')}
 
 __**What is this bot?**__
 This bot scrobbles songs played by other bots on your Discord server to Last.fm. I will automatically scrobble if you are on the same audio channel as the bot, on any server that I'm added to.
@@ -45,7 +45,7 @@ __**Commands**__`;
             messageText += `\n• ${command.data.description}\n`;
     }
 
-    messageText += `\nI'm open source! Visit my GitHub project page on https://github.com/Erick2280/discord2lastfm. If you're facing any issues, you can report them on https://github.com/Erick2280/discord2lastfm/issues.`
+    messageText += `\nI'm open source! Visit my GitHub project page on https://github.com/Erick2280/cordscrobbler. If you're facing any issues, you can report them on https://github.com/Erick2280/cordscrobbler/issues.`
 
     if (message.channel instanceof TextChannel) {
         message.reply('I sent the help via DM :)')

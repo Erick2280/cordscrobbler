@@ -7,7 +7,7 @@ import { PlaybackData } from './data-providing-service';
 export class LastfmService {
     
     readonly apiRootUrl = 'https://ws.audioscrobbler.com/2.0'
-    readonly userAgent = 'discord2lastfm/1.0.0'
+    readonly userAgent = 'cordscrobbler/1.0.0'
 
     performRequest(params: URLSearchParams, type: 'get' | 'post', signed: boolean) {
       params.set('api_key', process.env.LASTFM_API_KEY)
