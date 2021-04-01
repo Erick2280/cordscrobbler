@@ -1,4 +1,4 @@
-import { Message, Client, TextChannel, ReactionCollector, User, MessageEmbed } from 'discord.js';
+import { Message, Client, TextChannel, ReactionCollector, User } from 'discord.js';
 import { UsersService } from '../users-service';
 
 import { returnUserFriendlyErrorMessage } from '../error-handling';
