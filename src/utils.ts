@@ -1,8 +1,8 @@
+import { promises as fs } from 'fs';
 import SpotifyWebApi from 'spotify-web-api-node';
 import { PlaybackData } from './data-providing-service';
 import { Track } from './users-service';
 import { TextChannel, MessageEmbed, Message } from 'discord.js';
-import { promises as fs } from 'fs';
 
 const redColorHex = '#E31B23'
 
@@ -161,7 +161,7 @@ export async function requestSpotifyApiToken(spotifyApi: SpotifyWebApi) {
     spotifyApi.setAccessToken(data.body['access_token']);
 }
 
-export async function composeSimpleMessageEmbed(title: string, description: string, footer: string) {
+export async function composeBasicMessageEmbed(title: string, description: string = '', footer: string = '') {
     const RegistrationMessageEmbed = new MessageEmbed();
     RegistrationMessageEmbed
         .setColor(redColorHex)
@@ -169,35 +169,38 @@ export async function composeSimpleMessageEmbed(title: string, description: stri
         .setDescription(description)
         .setFooter(footer);
     
-    return RegistrationMessageEmbed;
-    
+    return RegistrationMessageEmbed;   
 }
 
-export async function parsePrivacyPolicy(){
-    let rawPrivacyPolicy = await fs.readFile("./docs/PRIVACY_POLICY.md", "utf8");
-    let privacyPolicy = rawPrivacyPolicy.split('\n# ')
-    .map((page) => {
-        let container;
-        if (page.split('\n').length == 2) {
-            container = { title: 'Privacy Policy', description: page };
-        } else {
-            let pageArray = page.split('\n');
-            let reFind = /(\#\#)(.*)/;
-            for (let index = 0; index < pageArray.length; index++) {
-                if (pageArray[index].match(reFind)) {
-                    pageArray[index] = pageArray[index].replace(
-                        reFind,
-                        `**${pageArray[index].match(reFind)[2]}**`
-                    );
+export async function parsePrivacyPolicyFile() {
+    const rawPrivacyPolicy = await fs.readFile('./docs/PRIVACY_POLICY.md', 'utf8');
+    const privacyPolicy = rawPrivacyPolicy.split('\n# ')
+        .map((page) => {
+            let container;
+            if (page.split('\n').length == 2) {
+                container = {
+                    title: 'Privacy Policy',
+                    description: page
+                };
+            } else {
+                const pageArray = page.split('\n');
+                const matchSubheadings = /(\#\#)(.*)/;
+                for (let index = 0; index < pageArray.length; index++) {
+                    if (pageArray[index].match(matchSubheadings)) {
+                        pageArray[index] = pageArray[index].replace(
+                            matchSubheadings,
+                            `**${pageArray[index].match(matchSubheadings)[2]}**`
+                        );
+                    }
                 }
+                container = {
+                    title: pageArray[0],
+                    description: pageArray.slice(1),
+                };
             }
-            container = {
-                title: pageArray[0],
-                description: pageArray.slice(1),
-            };
-        }
-        return container;
-    });
+            return container;
+        });
+
     return privacyPolicy;
 }
 
