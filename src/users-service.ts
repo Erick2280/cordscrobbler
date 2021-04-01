@@ -1,6 +1,6 @@
 import { PlaybackData } from './data-providing-service';
 import { LastfmService } from './lastfm-service';
-import { User as DiscordUser, MessageCollector, Message, TextChannel } from 'discord.js';
+import { User as DiscordUser, MessageCollector, Message, TextChannel, ReactionCollector } from 'discord.js';
 import { DatabaseService } from './database-service';
 import * as utils from './utils';
 
@@ -81,10 +81,10 @@ export class UsersService {
         return this.registeringUsers.findIndex(x => x.discordUserId === discordUser.id) !== -1;
     }
 
-    appendCollectorOnRegistrationProcess(discordUser: DiscordUser, messageCollector: MessageCollector) {
+    appendCollectorOnRegistrationProcess(discordUser: DiscordUser, collector: MessageCollector | ReactionCollector) {
         const registeringUser = this.registeringUsers.find(x => x.discordUserId === discordUser.id)
         if (registeringUser) {
-            registeringUser.messageCollector = messageCollector;
+            registeringUser.messageCollector = collector;
         }
     }
 
@@ -188,7 +188,7 @@ export type RegisteredUser = {
 
 export type RegisteringUser = {
     discordUserId: string;
-    messageCollector?: MessageCollector;
+    messageCollector?: MessageCollector | ReactionCollector;
     lastfmRequestToken: string;
 }
 
