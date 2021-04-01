@@ -2,6 +2,7 @@ import SpotifyWebApi from 'spotify-web-api-node';
 import { PlaybackData } from './data-providing-service';
 import { Track } from './users-service';
 import { TextChannel, MessageEmbed, Message } from 'discord.js';
+import { promises as fs } from 'fs';
 
 const redColorHex = '#E31B23'
 
@@ -158,4 +159,50 @@ export function sendSuccessfullyScrobbledMessageEmbed(track: Track, lastfmUsers:
 export async function requestSpotifyApiToken(spotifyApi: SpotifyWebApi) {
     const data = await spotifyApi.clientCredentialsGrant();
     spotifyApi.setAccessToken(data.body['access_token']);
+}
+
+export async function composeSimpleMessageEmbed(title: string, description: string, footer: string) {
+    const RegistrationMessageEmbed = new MessageEmbed();
+    RegistrationMessageEmbed
+        .setColor(redColorHex)
+        .setTitle(title)
+        .setDescription(description)
+        .setFooter(footer);
+    
+    return RegistrationMessageEmbed;
+    
+}
+
+export async function parsePrivacyPolicy(){
+    let rawPrivacyPolicy = await fs.readFile("./docs/PRIVACY_POLICY.md", "utf8");
+    let privacyPolicy = rawPrivacyPolicy.split('\n# ')
+    .map((page) => {
+        let container;
+        if (page.split('\n').length == 2) {
+            container = { title: 'Privacy Policy', description: page };
+        } else {
+            let pageArray = page.split('\n');
+            let reFind = /(\#\#)(.*)/;
+            for (let index = 0; index < pageArray.length; index++) {
+                if (pageArray[index].match(reFind)) {
+                    pageArray[index] = pageArray[index].replace(
+                        reFind,
+                        `**${pageArray[index].match(reFind)[2]}**`
+                    );
+                }
+            }
+            container = {
+                title: pageArray[0],
+                description: pageArray.slice(1),
+            };
+        }
+        return container;
+    });
+    return privacyPolicy;
+}
+
+export type EmbedPage = {
+    title: string,
+    description: string,
+    footer?: string
 }
