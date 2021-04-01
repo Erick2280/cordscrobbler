@@ -1,7 +1,10 @@
-import { Message, Client, TextChannel, MessageCollector } from 'discord.js';
+import { Message, Client, TextChannel, MessageCollector, ReactionCollector, User, MessageEmbed } from 'discord.js';
 import { UsersService } from '../users-service';
 
 import { returnUserFriendlyErrorMessage } from '../error-handling';
+import { composeSimpleMessageEmbed, EmbedPage, parsePrivacyPolicy } from '../utils';
+
+const tenMinutesInMillis = 600000;
 
 export const data = {
     name: 'register',
@@ -11,7 +14,7 @@ export const data = {
 };
 
 export async function execute(message: Message, args: string[], usersService: UsersService, client: Client) {
-    const tenMinutesInMillis = 600000;
+    
 
     // TODO: Token revalidation
 
@@ -19,52 +22,171 @@ export async function execute(message: Message, args: string[], usersService: Us
         message.reply('I sent the steps to connect your Last.fm account via DM.')
     }
 
-    message.author.send(`Hi, ${message.author}! Just a sec while I contact the Last.fm servers :)`)
     await usersService.startRegistrationProcess(message.author)
 
-    message.author.send(`
-Follow the steps below to complete your registration:
+    message.author.send(`Let's connect your Last.fm account with this bot!
+First, I need you to read my Privacy Policy below, use the arrows to move through the pages.
+It's very short and straightforward, I promise :)
+React with ✅ in the last page to confirm that you agree with my Privacy Policy, and i'll send you the link to complete the process.     
+`);
 
-1. Read the Privacy Policy for this service, available at https://github.com/Erick2280/cordscrobbler/tree/release/docs/PRIVACY_POLICY.md.
-2. Connect your Last.fm account entering ${usersService.getRegistrationProcessLoginUrl(message.author)}.
-    
-If you **agree with the Privacy Policy** and **completed these steps**, please **send an _ok_ message to me** here. If you do not agree with these terms, or want to cancel the registration process, please send a _cancel_ message to me.
-    `);
+    let privacyPolicy = await parsePrivacyPolicy();
 
-    const dmChannel = await message.author.createDM();
-    const collector = new MessageCollector(
-        dmChannel,
-        responseMessage => (
-            responseMessage.author.id === message.author.id &&
-            typeof responseMessage.content === 'string' &&
-            (responseMessage.content.toLowerCase() === 'ok' || responseMessage.content.toLowerCase() === 'cancel')),
+    sendPrivacyPolicyEmbed(message.author, privacyPolicy, 0, usersService);
+
+}
+
+async function sendPrivacyPolicyEmbed(user: User,privacyPolicy: EmbedPage[], page: number, usersService: UsersService){
+
+    let privacyPolicyTitle = privacyPolicy[page].title;
+    let privacyPolicyDescription = privacyPolicy[page].description;
+    let privacyPolicyPagination = `Page ${page+1} of 3`;
+
+
+    let parsedPrivacyPolicyPage = await composeSimpleMessageEmbed(privacyPolicyTitle, privacyPolicyDescription, privacyPolicyPagination);
+
+    let sentMessage = await user.send(parsedPrivacyPolicyPage);
+
+
+    if(page == 0){
+        sentMessage.react("➡️");
+    }else if(page == 1) {
+        sentMessage.react("⬅️");
+        sentMessage.react("➡️");
+    }else{
+        sentMessage.react("⬅️");
+        sentMessage.react('❌');
+        sentMessage.react('✅');
+    }
+
+    const collector = new ReactionCollector(
+        sentMessage,
+        (newReaction, user) =>
+            !user.bot &&
+            typeof newReaction.emoji.name === 'string' &&
+            (newReaction.emoji.name === '✅' ||
+                newReaction.emoji.name === '❌'||
+                newReaction.emoji.name === "➡️"||
+                newReaction.emoji.name === "⬅️"),
         { time: tenMinutesInMillis, max: 1 }
     );
 
-    collector.on('collect', async responseMessage => {
-        if (responseMessage.content.toLowerCase() === 'ok') {
-            responseMessage.channel.send('Thanks! Just a second while we set everything up :)');
-            
-            try {
-                const registeredUser = await usersService.completeRegistrationProcess(responseMessage.author);
-                responseMessage.channel.send(`Registration complete! Your Last.fm login is ${registeredUser.lastfmUserName}. Scrobbles have been enabled for you :)`)
-            } catch (error) {
-                returnUserFriendlyErrorMessage(error, responseMessage, usersService, client);
-                usersService.cancelRegistrationProcess(message.author);
-            }
-        } else {
-            responseMessage.channel.send(`I canceled your registration process. You can send **${process.env.DISCORD_BOT_PREFIX}register** to try again.`);
-            usersService.cancelRegistrationProcess(message.author);
+    collector.on('collect', async (newReaction, user) => {
+        if (newReaction.emoji.name === "➡️" && page < 2) {
+            await sentMessage.delete();
+            sendPrivacyPolicyEmbed(user, privacyPolicy, page+1, usersService);
+        }else if(newReaction.emoji.name === "⬅️" && page > 0){
+            await sentMessage.delete();
+            sendPrivacyPolicyEmbed(user, privacyPolicy, page-1, usersService);
+        }else if(newReaction.emoji.name === '✅' && page == 2){
+            await sentMessage.delete();
+            sendCompleteRegistrationEmbed(user, usersService);
+        }else if(newReaction.emoji.name === '❌' && page == 2){
+            await sentMessage.delete();
+            user.send(`I canceled your registration process. You can send **${process.env.DISCORD_BOT_PREFIX}register** to try again.`);
+            usersService.cancelRegistrationProcess(user);
         }
     });
 
-    collector.on('end', collected => {
-        if (collected.size === 0 && usersService.isUserInRegistrationProcess(message.author)) {
-            usersService.cancelRegistrationProcess(message.author);
-            message.author.send(`Your registration process has expired. You can try again sending **${process.env.DISCORD_BOT_PREFIX}register**.`);
+    collector.on('end', (collected) => {
+        if (
+            collected.size === 0 &&
+            usersService.isUserInRegistrationProcess(user)
+        ) {
+            sentMessage.delete()
+            usersService.cancelRegistrationProcess(user);
+            user.send(
+                `Your registration process has expired. You can try again sending **${process.env.DISCORD_BOT_PREFIX}register**.`
+            );
         }
     });
 
-    usersService.appendCollectorOnRegistrationProcess(message.author, collector);
+    usersService.appendCollectorOnRegistrationProcess(user, collector);
+}
 
+
+async function sendCompleteRegistrationEmbed(user: User, usersService: UsersService){
+
+    let registrationEmbed: MessageEmbed;
+    let sentMessage: Message;
+
+    let lastfmRegistrationURL = usersService.getRegistrationProcessLoginUrl(
+        user
+    );
+    let title =  "Last Step";
+    let description = `[Click Here to link your lastfm account](${lastfmRegistrationURL})`;
+    let footer = 'React with ✅ to confirm';
+    registrationEmbed = await composeSimpleMessageEmbed(title, description, footer);
+    sentMessage = await user.send(registrationEmbed);
+
+    await sentMessage.react('❌');
+    await sentMessage.react('✅');
+    const collector = new ReactionCollector(
+        sentMessage,
+        (newReaction, user) =>
+            !user.bot &&
+            typeof newReaction.emoji.name === 'string' &&
+            (newReaction.emoji.name === '✅' ||
+                newReaction.emoji.name === '❌'),
+        { time: tenMinutesInMillis, max: 1 }
+    );
+
+    collector.on('collect', async (newReaction, user) => {
+        if (newReaction.emoji.name === '✅') {
+            sentMessage.delete();
+            sendFinishRegistrationEmbed(user, usersService);
+        } else if (newReaction.emoji.name === '❌'){
+            newReaction.message.channel.send(
+                `I canceled your registration process. You can send **${process.env.DISCORD_BOT_PREFIX}register** to try again.`
+            );
+            usersService.cancelRegistrationProcess(user);
+        }
+    });
+
+    collector.on('end', (collected) => {
+        if (
+            collected.size === 0 &&
+            usersService.isUserInRegistrationProcess(user)
+        ) {
+            usersService.cancelRegistrationProcess(user);
+            user.send(
+                `Your registration process has expired. You can try again sending **${process.env.DISCORD_BOT_PREFIX}register**.`
+            );
+        }
+    });
+
+    usersService.appendCollectorOnRegistrationProcess(user, collector);
+}
+
+
+async function sendFinishRegistrationEmbed(user: User, usersService: UsersService) {
+
+
+    let title =  'Thanks! Just a second while we set everything up :)';
+    let registrationEmbed = await composeSimpleMessageEmbed(title, "", "");
+
+    let sentMessage = await user.send(registrationEmbed);
+
+    try {
+
+        const registeredUser = await usersService.completeRegistrationProcess(
+            user
+        );
+        let title =  'Registration completed';
+        let description = `Your Last.fm login is **${registeredUser.lastfmUserName}**.`;
+        let footer = 'Scrobbles have been enabled for you :)';
+        registrationEmbed = await composeSimpleMessageEmbed(title, description, footer);
+
+        sentMessage.edit(registrationEmbed);
+        sentMessage.react("🎶");
+
+    } catch (error) {
+        returnUserFriendlyErrorMessage(
+            error,
+            sentMessage,
+            usersService,
+            null
+        );
+        usersService.cancelRegistrationProcess(user);
+    }
 }
