@@ -4,8 +4,6 @@ import { UsersService } from '../users-service';
 import { returnUserFriendlyErrorMessage } from '../error-handling';
 import { EmbedPage, composeBasicMessageEmbed, parsePrivacyPolicyFile } from '../utils';
 
-const tenMinutesInMillis = 600000;
-
 export const data = {
     name: 'register',
     description: 'Connect your Last.fm account with this bot.',
@@ -14,7 +12,9 @@ export const data = {
 };
 
 export async function execute(message: Message, args: string[], usersService: UsersService, client: Client) {
-    
+
+    const tenMinutesInMillis = 600000;
+
     // TODO: Token revalidation
 
     if (message.channel instanceof TextChannel) {
