@@ -1,3 +1,4 @@
+import { promises as fs } from 'fs';
 import SpotifyWebApi from 'spotify-web-api-node';
 import { PlaybackData } from './data-providing-service';
 import { Track } from './users-service';
@@ -158,4 +159,53 @@ export function sendSuccessfullyScrobbledMessageEmbed(track: Track, lastfmUsers:
 export async function requestSpotifyApiToken(spotifyApi: SpotifyWebApi) {
     const data = await spotifyApi.clientCredentialsGrant();
     spotifyApi.setAccessToken(data.body['access_token']);
+}
+
+export async function composeBasicMessageEmbed(title: string, description: string = '', footer: string = '') {
+    const RegistrationMessageEmbed = new MessageEmbed();
+    RegistrationMessageEmbed
+        .setColor(redColorHex)
+        .setTitle(title)
+        .setDescription(description)
+        .setFooter(footer);
+    
+    return RegistrationMessageEmbed;   
+}
+
+export async function parsePrivacyPolicyFile() {
+    const rawPrivacyPolicy = await fs.readFile('./docs/PRIVACY_POLICY.md', 'utf8');
+    const privacyPolicy = rawPrivacyPolicy.split('\n# ')
+        .map((page) => {
+            let container;
+            if (page.split('\n').length == 2) {
+                container = {
+                    title: 'Privacy Policy',
+                    description: page
+                };
+            } else {
+                const pageArray = page.split('\n');
+                const matchSubheadings = /(\#\#)(.*)/;
+                for (let index = 0; index < pageArray.length; index++) {
+                    if (pageArray[index].match(matchSubheadings)) {
+                        pageArray[index] = pageArray[index].replace(
+                            matchSubheadings,
+                            `**${pageArray[index].match(matchSubheadings)[2]}**`
+                        );
+                    }
+                }
+                container = {
+                    title: pageArray[0],
+                    description: pageArray.slice(1),
+                };
+            }
+            return container;
+        });
+
+    return privacyPolicy;
+}
+
+export type EmbedPage = {
+    title: string,
+    description: string,
+    footer?: string
 }

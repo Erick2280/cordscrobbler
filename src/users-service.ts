@@ -1,6 +1,6 @@
+import { User as DiscordUser, MessageCollector, ReactionCollector, Message, TextChannel } from 'discord.js';
 import { PlaybackData } from './data-providing-service';
 import { LastfmService } from './lastfm-service';
-import { User as DiscordUser, MessageCollector, Message, TextChannel } from 'discord.js';
 import { DatabaseService } from './database-service';
 import * as utils from './utils';
 
@@ -54,7 +54,11 @@ export class UsersService {
     cancelRegistrationProcess(discordUser: DiscordUser) {
         const registeringUser = this.registeringUsers.find(x => x.discordUserId === discordUser.id)
         this.removeUserIdFromRegisteringUsersArray(discordUser.id);
-        registeringUser?.messageCollector?.stop();
+        
+        if (registeringUser?.activeCollector instanceof ReactionCollector) {
+            registeringUser.activeCollector.message.delete();
+        };
+        registeringUser?.activeCollector?.stop();
     }
 
     async completeRegistrationProcess(discordUser: DiscordUser): Promise<RegisteredUser> {
@@ -81,10 +85,10 @@ export class UsersService {
         return this.registeringUsers.findIndex(x => x.discordUserId === discordUser.id) !== -1;
     }
 
-    appendCollectorOnRegistrationProcess(discordUser: DiscordUser, messageCollector: MessageCollector) {
+    appendCollectorOnRegistrationProcess(discordUser: DiscordUser, activeCollector: MessageCollector | ReactionCollector) {
         const registeringUser = this.registeringUsers.find(x => x.discordUserId === discordUser.id)
         if (registeringUser) {
-            registeringUser.messageCollector = messageCollector;
+            registeringUser.activeCollector = activeCollector;
         }
     }
 
@@ -188,7 +192,7 @@ export type RegisteredUser = {
 
 export type RegisteringUser = {
     discordUserId: string;
-    messageCollector?: MessageCollector;
+    activeCollector?: MessageCollector | ReactionCollector;
     lastfmRequestToken: string;
 }
 

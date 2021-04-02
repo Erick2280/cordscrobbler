@@ -20,7 +20,7 @@ export function returnUserFriendlyErrorMessage(error: Error, message: Message, u
             message.author.send(`Seems like you are not registered. To start the registration process, please send **${process.env.DISCORD_BOT_PREFIX}register**.`);
             break;
         case 'UserAlreadyInRegistrationProcess':
-            message.author.send(`You already are in a registration process. Please enter ${usersService.getRegistrationProcessLoginUrl(message.author)} to proceed with login. After completing login, please send an **ok** message to me here. If you're encountering issues during registration, sending **${process.env.DISCORD_BOT_PREFIX}unregister** to clear your data might help.`);
+            message.author.send(`You already are in a registration process. Follow the steps in previous messages to proceed with login. If you're encountering issues during registration, sending **${process.env.DISCORD_BOT_PREFIX}unregister** to clear your data might help.`);
             break;
         case 'UserNotInRegistrationProcess':
             message.author.send(`You are not in registration process. To start it, please send **${process.env.DISCORD_BOT_PREFIX}register**.`);
