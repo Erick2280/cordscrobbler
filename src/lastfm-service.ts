@@ -64,6 +64,7 @@ export class LastfmService {
             } if (error?.response?.data?.error === 11 && error?.response?.data?.error === 16) {
               throw new Error('LastfmServiceUnavailable')
             } else {
+              console.error(error)
               throw new Error('LastfmRequestUnknownError')
             }
         }
@@ -96,7 +97,12 @@ export class LastfmService {
       try {
         await this.performRequest(params, 'post', true)
       } catch (error) {
-        console.error(error)
+        if (error?.response?.data?.error === 9) {
+          throw new Error('LastfmInvalidSessionKey')
+        } else {
+          console.error(error)
+          throw new Error('LastfmRequestUnknownError')
+        }
       }
         // TODO: Check scrobble history/queue on fail
 
@@ -120,9 +126,10 @@ export class LastfmService {
       try {
         await this.performRequest(params, 'post', true)
       } catch (error) {
-        console.error(error)
+        if (error?.response?.data?.error !== 9) {
+          console.error(error)
+        }
       }
-      // TODO: Error handling
     }
 
     getCallSignature(params: URLSearchParams) {
@@ -132,8 +139,8 @@ export class LastfmService {
         params.sort()
 
         for (const [key, value] of params) {
-          if (key !== "format") {
-            const copiedValue = typeof value !== "undefined" && value !== null ? value : "";
+          if (key !== 'format') {
+            const copiedValue = typeof value !== 'undefined' && value !== null ? value : '';
             signatureString += key + copiedValue;
           }
         }

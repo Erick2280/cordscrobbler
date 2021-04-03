@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import SpotifyWebApi from 'spotify-web-api-node';
 import { PlaybackData } from './data-providing-service';
 import { Track } from './users-service';
-import { TextChannel, MessageEmbed, Message } from 'discord.js';
+import { TextChannel, MessageEmbed, Message, User } from 'discord.js';
 
 const redColorHex = '#E31B23'
 
@@ -120,6 +120,18 @@ export async function sendNowScrobblingMessageEmbed(track: Track, discordChannel
     await nowScrobblingMessage.react('🚫')
 
     return nowScrobblingMessage;
+}
+
+export async function sendErrorMessageToUser(user: User, error: Error) {
+    if (user == null) {
+        return;
+    }
+    const messageText = `Something went wrong when I tried to scrobble your Last.fm account. Please try to undo your registration (sending \`${process.env.DISCORD_BOT_PREFIX}unregister\`) and connect your Last.fm account again (sending \`${process.env.DISCORD_BOT_PREFIX}register\`).
+If that doesn't work, please send a report through the [official Discord server](https://discord.gg/yhGhQj6cGa) or through [GitHub](https://github.com/Erick2280/cordscrobbler/issues).`
+    const errorInfo = `Error: ${error?.message ?? 'Unspecified'}` 
+    const messageEmbed = await composeBasicMessageEmbed('Scrobbling error', messageText, errorInfo);
+
+    await user.send(messageEmbed);
 }
 
 export function deleteMessage(message: Message) {
