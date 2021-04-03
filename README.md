@@ -17,11 +17,13 @@
 
 ---
 
+_Looking for **discord2lastfm**? Discord does not accept bots that include "discord" in the name, so the bot is now "Cordscrobbler"._
+
 ## How it works
 
 This bot scrobbles songs played by other bots on your Discord server to Last.fm. It will automatically scrobble if the user is on the same audio channel as the bot, on any server that this bot is added to.
 
-To enable it for you, you'll need to send a message to the bot with _-cords register_ and log in with your Last.fm account.
+To enable it for you, you'll need to send a message to the bot with `-cords register` and log in with your Last.fm account.
 
 ## Supported integrations
 
@@ -61,8 +63,8 @@ Finally, to start the bot, run:
 
 Alternatively, you can run `npm run watch` while testing to automatically reload on file changes.
 
-## Issues
+## Contact
 
-If you find any problems during the bot usage, feel free to [open an issue](https://github.com/Erick2280/cordscrobbler/issues) here on GitHub. PRs are welcome too!
+If you find any problems during the bot usage, please [open an issue](https://github.com/Erick2280/cordscrobbler/issues) here on GitHub. PRs are welcome too!
 
-You can also contact me on Discord :) My username is **Erick2280#4015**.
+Feel free to [join the Cordscrobbler Discord server](https://discord.gg/yhGhQj6cGa). Feedbacks are appreciated!
