@@ -76,7 +76,7 @@ First, I need you to read my Privacy Policy below (also available at https://git
                 sendCompleteRegistrationEmbed(user, usersService);
             } else if (newReaction.emoji.name === '❌' && pageIndex === privacyPolicyArray.length - 1) {
                 await sentMessage.delete();
-                user.send(`I canceled your registration process. You can send **${process.env.DISCORD_BOT_PREFIX}register** to try again.`);
+                user.send(`I canceled your registration process. You can send \`${process.env.DISCORD_BOT_PREFIX}register\` to try again.`);
                 usersService.cancelRegistrationProcess(user);
             }
         });
@@ -89,7 +89,7 @@ First, I need you to read my Privacy Policy below (also available at https://git
                 sentMessage.delete()
                 usersService.cancelRegistrationProcess(user);
                 user.send(
-                    `Your registration process has expired. You can try again sending **${process.env.DISCORD_BOT_PREFIX}register**.`
+                    `Your registration process has expired. You can try again sending \`${process.env.DISCORD_BOT_PREFIX}register\`.`
                 );
             }
         });
@@ -130,7 +130,7 @@ If the link isn't working, try copying the URL: ${lastfmRegistrationURL}
             } else if (newReaction.emoji.name === '❌'){
                 usersService.cancelRegistrationProcess(user);
                 user.send(
-                    `I canceled your registration process. You can send **${process.env.DISCORD_BOT_PREFIX}register** to try again.`
+                    `I canceled your registration process. You can send \`${process.env.DISCORD_BOT_PREFIX}register\` to try again.`
                 );
                 sentMessage.delete();
             }
@@ -143,7 +143,7 @@ If the link isn't working, try copying the URL: ${lastfmRegistrationURL}
             ) {
                 usersService.cancelRegistrationProcess(user);
                 user.send(
-                    `Your registration process has expired. You can try again sending **${process.env.DISCORD_BOT_PREFIX}register**.`
+                    `Your registration process has expired. You can try again sending \`${process.env.DISCORD_BOT_PREFIX}register\`.`
                 );
                 sentMessage.delete();
             }
@@ -163,7 +163,10 @@ If the link isn't working, try copying the URL: ${lastfmRegistrationURL}
                 user
             );
             let title = 'Registration completed';
-            let description = `Your Last.fm login is **${registeredUser.lastfmUserName}**.`;
+            let description = `Your Last.fm login is **${registeredUser.lastfmUserName}**.
+            
+You can review your settings (for example, if you wish to temporarily disable scrobbles) by sending \`${process.env.DISCORD_BOT_PREFIX}account\`.
+            `;
             let footer = 'Happy listening! Scrobbles have been enabled for you :)';
             registrationEmbed = await composeBasicMessageEmbed(title, description, footer);
     

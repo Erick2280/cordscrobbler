@@ -59,7 +59,7 @@ client.on('message', async (message) => {
                     commands.find(cmd => cmd.data.aliases && cmd.data.aliases.includes(commandName));
 
         if (!command) {
-            message.reply(`I didn't recognize this command. You can see all the available commands by sending **${process.env.DISCORD_BOT_PREFIX}help**.`);
+            message.reply(`I didn't recognize this command. You can see all the available commands by sending \`${process.env.DISCORD_BOT_PREFIX}help\`.`);
             return;
         }
 
