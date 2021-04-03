@@ -70,7 +70,8 @@ export class UsersService {
                 lastfmSessionKey: lastfmSessionResponse.sessionKey,
                 lastfmUserName: lastfmSessionResponse.userName,
                 registrationTimestamp: Date.now(),
-                isScrobbleOn: true
+                isScrobbleOn: true,
+                sendNewsMessages: true
             };
             this.registeredUsers.push(registeredUser);
             await this.databaseService.setRegisteredUser(registeredUser);
@@ -117,6 +118,15 @@ export class UsersService {
             throw new Error('UserNotRegistered')
         }
         registeredUser.isScrobbleOn = isScrobbledOn;
+        this.databaseService.setRegisteredUser(registeredUser);
+    }
+
+    toggleNewsMessagesSendingForUser(discordUser: DiscordUser, sendNewsMessages: boolean) {
+        const registeredUser = this.registeredUsers.find(x => x.discordUserId === discordUser.id);
+        if (!registeredUser) {
+            throw new Error('UserNotRegistered')
+        }
+        registeredUser.sendNewsMessages = sendNewsMessages;
         this.databaseService.setRegisteredUser(registeredUser);
     }
 
@@ -188,6 +198,7 @@ export type RegisteredUser = {
     lastfmSessionKey: string;
     registrationTimestamp: number;
     isScrobbleOn: boolean;
+    sendNewsMessages: boolean;
 };
 
 export type RegisteringUser = {
