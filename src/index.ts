@@ -5,6 +5,7 @@ import * as utils from './utils';
 
 import fs from 'fs';
 import SpotifyWebApi from 'spotify-web-api-node';
+import AutoPoster from 'topgg-autoposter';
 
 import { DataProvidingService } from './data-providing-service';
 import { UsersService } from './users-service';
@@ -105,4 +106,11 @@ console.log('Retrieving data from database...');
 usersService.retrieveAllRegisteredUsersFromDatabase().then(() => {
     console.log('Connecting to Discord...');
     client.login(process.env.DISCORD_TOKEN);
+
+    if (process.env.NODE_ENV === 'production' && process.env.TOPGG_TOKEN && process.env.TOPGG_TOKEN !== '') {
+        AutoPoster(process.env.TOPGG_TOKEN, client);
+        console.log('Top.gg AutoPoster enabled');
+    } else {
+        console.log('Top.gg AutoPoster disabled');
+    }
 })
