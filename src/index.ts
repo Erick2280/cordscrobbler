@@ -87,6 +87,20 @@ client.on('message', async (message) => {
 
 });
 
+client.on('guildCreate', async (guild: Discord.Guild) => {
+    let channel = guild.channels.cache.find(channel =>
+        channel.type === 'text' &&
+        channel.permissionsFor(guild.me).has('SEND_MESSAGES')
+    );
+
+    if (channel == null || !(channel instanceof Discord.TextChannel)) {
+        return;
+    }
+
+    const welcomeMessage = await utils.composeGuildWelcomeMessageEmbed();
+    channel.send(welcomeMessage); 
+});
+
 console.log('Retrieving data from database...');
 usersService.retrieveAllRegisteredUsersFromDatabase().then(() => {
     console.log('Connecting to Discord...');

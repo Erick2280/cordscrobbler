@@ -17,6 +17,8 @@ export async function execute(message: Message) {
 This bot scrobbles songs played by other bots on your Discord server to Last.fm. I will automatically scrobble if you are on the same audio channel as the bot, on any server that I'm added to.
 To enable it for you, you'll need to send a message to me with \`${process.env.DISCORD_BOT_PREFIX}register\` and log in with your Last.fm account.
 
+Note that I will send messages to acknowledge scrobbles every song when someone requests another bot (such as Groovy) to play music. As this may bother some, I suggest creating a text channel just for bots.
+
 Some bots require additional configuration. Please send \`${process.env.DISCORD_BOT_PREFIX}supportedbots\` for further help on this.
 
 **Commands**\n`;

@@ -130,8 +130,25 @@ export function editEmbedMessageToSkipped(message: Message) {
     return message.edit(message.embeds[0].setTitle('Skipped').setFooter(''))
 }
 
+export async function composeGuildWelcomeMessageEmbed() {
+    
+    const messageText = `Thank you so much for adding me to this server! 😊
+    
+This bot scrobbles songs played by other bots to Last.fm. I will automatically scrobble to registered users that are on the same audio channel as the bot, on any server that I'm added to.
+
+• **To enable scrobbling for you**, send \`${process.env.DISCORD_BOT_PREFIX}register\` and follow the steps to connect me with your Last.fm account.
+• **If you want a list of all commands**, send \`${process.env.DISCORD_BOT_PREFIX}help\`.
+• **To see which music bots are supported**, send \`${process.env.DISCORD_BOT_PREFIX}supportedbots\`.
+
+Note that I will send messages to acknowledge scrobbles every song when someone requests another bot (such as Groovy) to play music. As this may bother some, I suggest creating a text channel just for bots.
+
+I'm open source! Visit my [GitHub project page](https://github.com/Erick2280/cordscrobbler). Feel free to [join the Cordscrobbler Discord server](https://discord.gg/yhGhQj6cGa) too. Feedbacks are appreciated!`;
+    const messageEmbed = composeBasicMessageEmbed(`Hi! I'm Cordscrobble!`, messageText);
+    return messageEmbed; 
+}
+
 export function sendSuccessfullyScrobbledMessageEmbed(track: Track, lastfmUsers: string[], discordChannel: TextChannel) {
-    const successfullyScrobbledEmbed = new MessageEmbed()
+    const successfullyScrobbledEmbed = new MessageEmbed();
 
     if (lastfmUsers.length > 0) {
         successfullyScrobbledEmbed.setTitle('Successfully scrobbled');
