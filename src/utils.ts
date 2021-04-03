@@ -10,7 +10,7 @@ export async function parseTrack(playbackData: PlaybackData, spotifyApi: Spotify
     // Based on the implementation of https://github.com/web-scrobbler/web-scrobbler/blob/master/src/core/content/util.js
 
     const removeStrings = [
-        '(official)', '(music video)', '(lyric video)', 'videoclipe oficial', 'official music video', '(official music)', '(official video)', '(official audio)', '(videoclip)', '(videoclipe)', '(audio)', 'm/v', ' mv', 'clipe oficial', 'color coded', 'audio only', 'ft.', 'feat.', '…'
+        '(official)', '(music video)', '(lyric video)', 'videoclipe oficial', 'official music video', '(official music)', '(official video)', '(official audio)', '(videoclip)', '(videoclipe)', '(video)', '(audio)', 'm/v', ' mv', 'clipe oficial', 'color coded', 'audio only', 'ft.', 'feat.', '…'
     ];
     const removeChars = [
         '-', '&', ',', '(', ')', '\"', '\''
