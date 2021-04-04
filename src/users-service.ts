@@ -1,6 +1,6 @@
+import { User as DiscordUser, MessageCollector, ReactionCollector, Message, TextChannel } from 'discord.js';
 import { PlaybackData } from './data-providing-service';
 import { LastfmService } from './lastfm-service';
-import { User as DiscordUser, MessageCollector, Message, TextChannel } from 'discord.js';
 import { DatabaseService } from './database-service';
 import * as utils from './utils';
 
@@ -54,7 +54,11 @@ export class UsersService {
     cancelRegistrationProcess(discordUser: DiscordUser) {
         const registeringUser = this.registeringUsers.find(x => x.discordUserId === discordUser.id)
         this.removeUserIdFromRegisteringUsersArray(discordUser.id);
-        registeringUser?.messageCollector?.stop();
+        
+        if (registeringUser?.activeCollector instanceof ReactionCollector) {
+            registeringUser.activeCollector.message.delete();
+        };
+        registeringUser?.activeCollector?.stop();
     }
 
     async completeRegistrationProcess(discordUser: DiscordUser): Promise<RegisteredUser> {
@@ -66,7 +70,8 @@ export class UsersService {
                 lastfmSessionKey: lastfmSessionResponse.sessionKey,
                 lastfmUserName: lastfmSessionResponse.userName,
                 registrationTimestamp: Date.now(),
-                isScrobbleOn: true
+                isScrobbleOn: true,
+                sendNewsMessages: true
             };
             this.registeredUsers.push(registeredUser);
             await this.databaseService.setRegisteredUser(registeredUser);
@@ -81,10 +86,10 @@ export class UsersService {
         return this.registeringUsers.findIndex(x => x.discordUserId === discordUser.id) !== -1;
     }
 
-    appendCollectorOnRegistrationProcess(discordUser: DiscordUser, messageCollector: MessageCollector) {
+    appendCollectorOnRegistrationProcess(discordUser: DiscordUser, activeCollector: MessageCollector | ReactionCollector) {
         const registeringUser = this.registeringUsers.find(x => x.discordUserId === discordUser.id)
         if (registeringUser) {
-            registeringUser.messageCollector = messageCollector;
+            registeringUser.activeCollector = activeCollector;
         }
     }
 
@@ -113,6 +118,15 @@ export class UsersService {
             throw new Error('UserNotRegistered')
         }
         registeredUser.isScrobbleOn = isScrobbledOn;
+        this.databaseService.setRegisteredUser(registeredUser);
+    }
+
+    toggleNewsMessagesSendingForUser(discordUser: DiscordUser, sendNewsMessages: boolean) {
+        const registeredUser = this.registeredUsers.find(x => x.discordUserId === discordUser.id);
+        if (!registeredUser) {
+            throw new Error('UserNotRegistered')
+        }
+        registeredUser.sendNewsMessages = sendNewsMessages;
         this.databaseService.setRegisteredUser(registeredUser);
     }
 
@@ -158,13 +172,21 @@ export class UsersService {
         const skippedUsers = nowScrobblingMessage.reactions.cache.get('🚫').users.cache;
 
         if (this.channelLastScrobbleCandidateTimestamp.get(playbackData.channelId) === playbackData.timestamp) {
+            const scrobblingRequestPromises: Promise<void>[] = [];
+
             for (const userId of playbackData.listeningUsersId) {
-                const registeredUser = this.registeredUsers.find(x => x.discordUserId === userId)
-                if (registeredUser?.isScrobbleOn && !skippedUsers.get(registeredUser.discordUserId)) {
-                    this.lastfmService.scrobble([track], [playbackData], registeredUser.lastfmSessionKey).catch((error) => {console.error(error)})
-                    lastfmUsers.push(registeredUser.lastfmUserName);
+                const registeredUser = this.registeredUsers.find(user => user.discordUserId === userId);
+                if (registeredUser?.isScrobbleOn && !skippedUsers.get(registeredUser.discordUserId)) {                
+                    const scrobblingRequestPromise = this.lastfmService.scrobble([track], [playbackData], registeredUser.lastfmSessionKey)
+                    .then(
+                        () => { lastfmUsers.push(registeredUser.lastfmUserName) })
+                    .catch(
+                        (error) => { utils.sendErrorMessageToUser(messageChannel.client.users.cache.get(registeredUser.discordUserId), error) });
+                    scrobblingRequestPromises.push(scrobblingRequestPromise);
                 }
             }
+
+            await Promise.all(scrobblingRequestPromises);
 
             await utils.deleteMessage(nowScrobblingMessage);
             await utils.sendSuccessfullyScrobbledMessageEmbed(track, lastfmUsers, messageChannel);
@@ -174,8 +196,6 @@ export class UsersService {
         }
 
     }
-
-    // TODO: What happens if the user revoked permissions? Can the bot send a DM to update tokens?
 }
 
 export type RegisteredUser = {
@@ -184,11 +204,12 @@ export type RegisteredUser = {
     lastfmSessionKey: string;
     registrationTimestamp: number;
     isScrobbleOn: boolean;
+    sendNewsMessages: boolean;
 };
 
 export type RegisteringUser = {
     discordUserId: string;
-    messageCollector?: MessageCollector;
+    activeCollector?: MessageCollector | ReactionCollector;
     lastfmRequestToken: string;
 }
 

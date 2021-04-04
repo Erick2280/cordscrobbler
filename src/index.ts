@@ -5,6 +5,7 @@ import * as utils from './utils';
 
 import fs from 'fs';
 import SpotifyWebApi from 'spotify-web-api-node';
+import AutoPoster from 'topgg-autoposter';
 
 import { DataProvidingService } from './data-providing-service';
 import { UsersService } from './users-service';
@@ -59,7 +60,7 @@ client.on('message', async (message) => {
                     commands.find(cmd => cmd.data.aliases && cmd.data.aliases.includes(commandName));
 
         if (!command) {
-            message.reply(`I didn't recognize this command. You can see all the available commands by sending **${process.env.DISCORD_BOT_PREFIX}help**.`);
+            message.reply(`I didn't recognize this command. You can see all the available commands by sending \`${process.env.DISCORD_BOT_PREFIX}help\`.`);
             return;
         }
 
@@ -87,8 +88,29 @@ client.on('message', async (message) => {
 
 });
 
+client.on('guildCreate', async (guild: Discord.Guild) => {
+    let channel = guild.channels.cache.find(channel =>
+        channel.type === 'text' &&
+        channel.permissionsFor(guild.me).has('SEND_MESSAGES')
+    );
+
+    if (channel == null || !(channel instanceof Discord.TextChannel)) {
+        return;
+    }
+
+    const welcomeMessage = await utils.composeGuildWelcomeMessageEmbed();
+    channel.send(welcomeMessage); 
+});
+
 console.log('Retrieving data from database...');
 usersService.retrieveAllRegisteredUsersFromDatabase().then(() => {
     console.log('Connecting to Discord...');
     client.login(process.env.DISCORD_TOKEN);
+
+    if (process.env.NODE_ENV === 'production' && process.env.TOPGG_TOKEN && process.env.TOPGG_TOKEN !== '') {
+        AutoPoster(process.env.TOPGG_TOKEN, client);
+        console.log('Top.gg AutoPoster enabled');
+    } else {
+        console.log('Top.gg AutoPoster disabled');
+    }
 })

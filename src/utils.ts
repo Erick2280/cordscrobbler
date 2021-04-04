@@ -1,7 +1,8 @@
+import { promises as fs } from 'fs';
 import SpotifyWebApi from 'spotify-web-api-node';
 import { PlaybackData } from './data-providing-service';
 import { Track } from './users-service';
-import { TextChannel, MessageEmbed, Message } from 'discord.js';
+import { TextChannel, MessageEmbed, Message, User } from 'discord.js';
 
 const redColorHex = '#E31B23'
 
@@ -9,7 +10,7 @@ export async function parseTrack(playbackData: PlaybackData, spotifyApi: Spotify
     // Based on the implementation of https://github.com/web-scrobbler/web-scrobbler/blob/master/src/core/content/util.js
 
     const removeStrings = [
-        '(official)', '(music video)', '(lyric video)', 'videoclipe oficial', 'official music video', '(official music)', '(official video)', '(official audio)', '(videoclip)', '(videoclipe)', '(audio)', 'm/v', ' mv', 'clipe oficial', 'color coded', 'audio only', 'ft.', 'feat.', '…'
+        '(official)', '(music video)', '(lyric video)', 'videoclipe oficial', 'official music video', '(official music)', '(official video)', '(official audio)', '(videoclip)', '(videoclipe)', '(video)', '(audio)', 'm/v', ' mv', 'clipe oficial', 'color coded', 'audio only', 'ft.', 'feat.', '…'
     ];
     const removeChars = [
         '-', '&', ',', '(', ')', '\"', '\''
@@ -121,6 +122,18 @@ export async function sendNowScrobblingMessageEmbed(track: Track, discordChannel
     return nowScrobblingMessage;
 }
 
+export async function sendErrorMessageToUser(user: User, error: Error) {
+    if (user == null) {
+        return;
+    }
+    const messageText = `Something went wrong when I tried to scrobble your Last.fm account. Please try to undo your registration (sending \`${process.env.DISCORD_BOT_PREFIX}unregister\`) and connect your Last.fm account again (sending \`${process.env.DISCORD_BOT_PREFIX}register\`).
+If that doesn't work, please send a report through the [official Discord server](https://discord.gg/yhGhQj6cGa) or through [GitHub](https://github.com/Erick2280/cordscrobbler/issues).`
+    const errorInfo = `Error: ${error?.message ?? 'Unspecified'}` 
+    const messageEmbed = await composeBasicMessageEmbed('Scrobbling error', messageText, errorInfo);
+
+    await user.send(messageEmbed);
+}
+
 export function deleteMessage(message: Message) {
     return message.delete()
 }
@@ -129,8 +142,25 @@ export function editEmbedMessageToSkipped(message: Message) {
     return message.edit(message.embeds[0].setTitle('Skipped').setFooter(''))
 }
 
+export async function composeGuildWelcomeMessageEmbed() {
+    
+    const messageText = `Thank you so much for adding me to this server! 😊
+    
+This bot scrobbles songs played by other bots to Last.fm. I will automatically scrobble to registered users that are on the same audio channel as the bot, on any server that I'm added to.
+
+• **To enable scrobbling for you**, send \`${process.env.DISCORD_BOT_PREFIX}register\` and follow the steps to connect me with your Last.fm account.
+• **If you want a list of all commands**, send \`${process.env.DISCORD_BOT_PREFIX}help\`.
+• **To see which music bots are supported**, send \`${process.env.DISCORD_BOT_PREFIX}supportedbots\`.
+
+Note that I will send messages to acknowledge scrobbles every song when someone requests another bot (such as Groovy) to play music. As this may bother some, I suggest creating a text channel just for bots.
+
+I'm open source! Visit my [GitHub project page](https://github.com/Erick2280/cordscrobbler). Feel free to [join the Cordscrobbler Discord server](https://discord.gg/yhGhQj6cGa) too. Feedbacks are appreciated!`;
+    const messageEmbed = composeBasicMessageEmbed(`Hi! I'm Cordscrobble!`, messageText);
+    return messageEmbed; 
+}
+
 export function sendSuccessfullyScrobbledMessageEmbed(track: Track, lastfmUsers: string[], discordChannel: TextChannel) {
-    const successfullyScrobbledEmbed = new MessageEmbed()
+    const successfullyScrobbledEmbed = new MessageEmbed();
 
     if (lastfmUsers.length > 0) {
         successfullyScrobbledEmbed.setTitle('Successfully scrobbled');
@@ -158,4 +188,53 @@ export function sendSuccessfullyScrobbledMessageEmbed(track: Track, lastfmUsers:
 export async function requestSpotifyApiToken(spotifyApi: SpotifyWebApi) {
     const data = await spotifyApi.clientCredentialsGrant();
     spotifyApi.setAccessToken(data.body['access_token']);
+}
+
+export async function composeBasicMessageEmbed(title: string, description: string = '', footer: string = '') {
+    const RegistrationMessageEmbed = new MessageEmbed();
+    RegistrationMessageEmbed
+        .setColor(redColorHex)
+        .setTitle(title)
+        .setDescription(description)
+        .setFooter(footer);
+    
+    return RegistrationMessageEmbed;   
+}
+
+export async function parsePrivacyPolicyFile() {
+    const rawPrivacyPolicy = await fs.readFile('./docs/PRIVACY_POLICY.md', 'utf8');
+    const privacyPolicy = rawPrivacyPolicy.split('\n# ')
+        .map((page) => {
+            let container;
+            if (page.split('\n').length == 2) {
+                container = {
+                    title: 'Privacy Policy',
+                    description: page
+                };
+            } else {
+                const pageArray = page.split('\n');
+                const matchSubheadings = /(\#\#)(.*)/;
+                for (let index = 0; index < pageArray.length; index++) {
+                    if (pageArray[index].match(matchSubheadings)) {
+                        pageArray[index] = pageArray[index].replace(
+                            matchSubheadings,
+                            `**${pageArray[index].match(matchSubheadings)[2]}**`
+                        );
+                    }
+                }
+                container = {
+                    title: pageArray[0],
+                    description: pageArray.slice(1),
+                };
+            }
+            return container;
+        });
+
+    return privacyPolicy;
+}
+
+export type EmbedPage = {
+    title: string,
+    description: string,
+    footer?: string
 }

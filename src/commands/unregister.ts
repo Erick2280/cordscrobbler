@@ -44,7 +44,7 @@ export async function execute(message: Message, args: string[], usersService: Us
     
         } else if (usersService.isUserInRegistrationProcess(message.author)) {
             usersService.cancelRegistrationProcess(message.author);
-            message.author.send(`I canceled your registration process. You can send **${process.env.DISCORD_BOT_PREFIX}register** to try again.`)
+            message.author.send(`I canceled your registration process. You can send \`${process.env.DISCORD_BOT_PREFIX}register\` to try again.`)
         } else {
             message.author.send(`You don't seem to be registered. No further action was taken :)`)
         

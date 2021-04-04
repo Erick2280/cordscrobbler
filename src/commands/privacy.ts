@@ -13,6 +13,6 @@ export async function execute(message: Message, args: string[], usersService: Us
         message.reply('I sent a message to your DMs :)')
     }
 
-    message.author.send(`Our privacy policy is available on https://github.com/Erick2280/discord2lastfm/tree/release/docs/PRIVACY_POLICY.md.`)
+    message.author.send(`Our privacy policy is available on https://github.com/Erick2280/cordscrobbler/tree/release/docs/PRIVACY_POLICY.md.`)
 
 }
