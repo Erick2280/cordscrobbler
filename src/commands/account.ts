@@ -24,7 +24,7 @@ _When this option is enabled, Cordscrobbler will scrobble songs played to your L
 
 **Receive news and updates from Cordscrobbler**
 ${registeredUser.sendNewsMessages ? '🟢 Enabled' : '🔴 Disabled'}
-_When this option is disabled, I will send news about Cordscrobbler updates, new features and so on. To turn it ${!registeredUser.sendNewsMessages ? 'on' : 'off'}, send \`${process.env.DISCORD_BOT_PREFIX}news ${!registeredUser.sendNewsMessages ? 'on' : 'off'}\`._
+_When this option is enabled, I will send news about Cordscrobbler updates, new features and so on. To turn it ${!registeredUser.sendNewsMessages ? 'on' : 'off'}, send \`${process.env.DISCORD_BOT_PREFIX}news ${!registeredUser.sendNewsMessages ? 'on' : 'off'}\`._
 `
 
     const messageEmbed = await composeBasicMessageEmbed('Registration details', messageText)
