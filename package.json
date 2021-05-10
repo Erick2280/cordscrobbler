@@ -1,6 +1,6 @@
 {
   "name": "cordscrobbler",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Last.fm scrobbler for songs played by bots on your Discord server.",
   "main": "dist/index.js",
   "scripts": {
@@ -35,5 +35,11 @@
     "firebase-admin": "^9.6.0",
     "spotify-web-api-node": "^5.0.2",
     "topgg-autoposter": "^1.1.9"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.3",
+    "erlpack": "github:discord/erlpack",
+    "utf-8-validate": "^5.0.4",
+    "zlib-sync": "^0.1.7"
   }
 }
