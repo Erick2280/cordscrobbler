@@ -5,8 +5,10 @@ export class RythmDataProvider implements DataProvider {
     readonly providerName = 'Rythm Bot';
     readonly providerAdditionalInfo = 'The "Announce Songs" option must be enabled on Rythm. To turn it on, send Rythm the following message: `!settings announcesongs on` (or equivalent if you have changed the bot prefix).';
 
+    readonly possibleUsernames = ['Rythm', 'Rythm 2', 'Rythm 3', 'Rythm 4', 'Rythm 5']
+
     isHandleableMessage(message: Message): boolean {
-        return (message.author.username === 'Rythm') && (message?.embeds[0]?.title === 'Now Playing 🎵'); // TODO or skipped
+        return (this.possibleUsernames.includes(message.author.username)) && (message?.embeds[0]?.title === 'Now Playing 🎵'); // TODO or skipped
     }
 
     getPlaybackDataFromMessage(message: Message): PlaybackData {
