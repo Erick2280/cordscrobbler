@@ -1,12 +1,12 @@
 import { DataProvider, PlaybackData } from '../data-providing-service';
 import { Message } from 'discord.js';
 
-export class GroovyDataProvider implements DataProvider {
-    readonly providerName = 'Groovy Bot (out of service)';
+export class ChipDataProvider implements DataProvider {
+    readonly providerName = 'Chip Bot';
     readonly providerAdditionalInfo = 'Out-of-the-box support.';
 
     isHandleableMessage(message: Message): boolean {
-        return (message.author.username === 'Groovy') && (message?.embeds[0]?.title === 'Now playing');
+        return (message.author.username === 'Chip') && (message?.embeds[0]?.author?.name === '|  Now playing');
     }
 
     getPlaybackDataFromMessage(message: Message): PlaybackData {

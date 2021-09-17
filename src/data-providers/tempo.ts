@@ -1,22 +1,20 @@
 import { DataProvider, PlaybackData } from '../data-providing-service';
 import { Message } from 'discord.js';
 
-export class GroovyDataProvider implements DataProvider {
-    readonly providerName = 'Groovy Bot (out of service)';
+export class TempoDataProvider implements DataProvider {
+    readonly providerName = 'Tempo Bot';
     readonly providerAdditionalInfo = 'Out-of-the-box support.';
+    readonly titlePaddingIndex = 9
 
     isHandleableMessage(message: Message): boolean {
-        return (message.author.username === 'Groovy') && (message?.embeds[0]?.title === 'Now playing');
+        return (message.author.username === 'Tempo') && (message?.embeds[0]?.author?.name?.startsWith('Playing: '));
     }
 
     getPlaybackDataFromMessage(message: Message): PlaybackData {
-        const dataString = message.embeds[0]?.description;
-        const title = dataString.slice(dataString.indexOf('[') + 1, dataString.indexOf(']'));
-        const url = dataString.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/)?.[0];
-        
+        const title = message?.embeds[0]?.author?.name?.slice(this.titlePaddingIndex);
+
         return {
             title,
-            url,
             guildId: message.guild.id,
             timestamp: new Date(),
             channelId: message.member.voice.channel.id,

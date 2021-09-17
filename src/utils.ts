@@ -152,7 +152,7 @@ This bot scrobbles songs played by other bots to Last.fm. I will automatically s
 • **If you want a list of all commands**, send \`${process.env.DISCORD_BOT_PREFIX}help\`.
 • **To see which music bots are supported**, send \`${process.env.DISCORD_BOT_PREFIX}supportedbots\`.
 
-Note that I will send messages to acknowledge scrobbles every song when someone requests another bot (such as Groovy) to play music. As this may bother some, I suggest creating a text channel just for bots.
+Note that I will send messages to acknowledge scrobbles every song when someone requests another bot (such as Hydra) to play music. As this may bother some, I suggest creating a text channel just for bots.
 
 I'm open source! Visit my [GitHub project page](https://github.com/Erick2280/cordscrobbler). Feel free to [join the Cordscrobbler Discord server](https://discord.gg/yhGhQj6cGa) too. Feedbacks are appreciated!`;
     const messageEmbed = composeBasicMessageEmbed(`Hi! I'm Cordscrobble!`, messageText);

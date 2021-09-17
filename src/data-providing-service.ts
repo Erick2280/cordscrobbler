@@ -1,6 +1,9 @@
 import { Message } from 'discord.js';
-import { GroovyDataProvider } from './data-providers/groovy';
+import { ChipDataProvider } from './data-providers/chip';
 import { HydraDataProvider } from './data-providers/hydra';
+import { JockieDataProvider } from './data-providers/jockie';
+import { TempoDataProvider } from './data-providers/tempo';
+import { GroovyDataProvider } from './data-providers/groovy';
 import { RythmDataProvider } from './data-providers/rythm';
 
 export interface DataProvider {
@@ -21,8 +24,11 @@ export type PlaybackData = {
 };
 
 export const allDataProviders: DataProvider[] = [
-        new GroovyDataProvider(),
+        new ChipDataProvider(),
         new HydraDataProvider(),
+        new JockieDataProvider(),
+        new TempoDataProvider(),
+        new GroovyDataProvider(),
         new RythmDataProvider(),
     ];
 
