@@ -2,7 +2,7 @@ import { DataProvider, PlaybackData } from '../data-providing-service';
 import { Message } from 'discord.js';
 
 export class GroovyDataProvider implements DataProvider {
-    readonly providerName = 'Groovy Bot';
+    readonly providerName = 'Groovy Bot (out of service)';
     readonly providerAdditionalInfo = 'Out-of-the-box support.';
 
     isHandleableMessage(message: Message): boolean {
@@ -12,7 +12,7 @@ export class GroovyDataProvider implements DataProvider {
     getPlaybackDataFromMessage(message: Message): PlaybackData {
         const dataString = message.embeds[0]?.description;
         const title = dataString.slice(dataString.indexOf('[') + 1, dataString.indexOf(']'));
-        const url = dataString.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/)[0];
+        const url = dataString.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/)?.[0];
         
         return {
             title,
