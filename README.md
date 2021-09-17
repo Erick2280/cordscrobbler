@@ -27,9 +27,12 @@ To enable it for you, you'll need to send a message to the bot with `-cords regi
 
 ## Supported integrations
 
+- [Chip Bot](https://chipbot.gg/)
 - [Groovy Bot](https://groovy.bot/)
 - [Hydra Bot](https://hydra.bot/)
+- [Jockie Music](https://jockiemusic.com/)
 - [Rythm Bot](https://rythmbot.co/) (requires additional configuration)
+- [Tempo Bot](https://tempobot.net/)
 
 ## Adding to your server
 
