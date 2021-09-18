@@ -30,6 +30,8 @@ _When this option is enabled, I will send news about Cordscrobbler updates, new 
     const messageEmbed = await composeBasicMessageEmbed('Registration details', messageText)
 
     message.author.send(`Hello, ${message.author}!`);
-    message.author.send(messageEmbed);
+    message.author.send({
+        embeds: [messageEmbed]
+    });
 
 }

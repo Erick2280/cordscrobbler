@@ -116,7 +116,9 @@ export async function sendNowScrobblingMessageEmbed(track: Track, discordChannel
 
     nowScrobblingMessageEmbed.setFooter('To skip scrobbling of this track for your account, react this message with 🚫.')
 
-    const nowScrobblingMessage = await discordChannel.send(nowScrobblingMessageEmbed);
+    const nowScrobblingMessage = await discordChannel.send({
+        embeds: [nowScrobblingMessageEmbed]
+    });
     await nowScrobblingMessage.react('🚫')
 
     return nowScrobblingMessage;
@@ -131,7 +133,9 @@ If that doesn't work, please send a report through the [official Discord server]
     const errorInfo = `Error: ${error?.message ?? 'Unspecified'}` 
     const messageEmbed = await composeBasicMessageEmbed('Scrobbling error', messageText, errorInfo);
 
-    await user.send(messageEmbed);
+    await user.send({
+        embeds: [messageEmbed]
+    });
 }
 
 export function deleteMessage(message: Message) {
@@ -139,7 +143,9 @@ export function deleteMessage(message: Message) {
 }
 
 export function editEmbedMessageToSkipped(message: Message) {
-    return message.edit(message.embeds[0].setTitle('Skipped').setFooter(''))
+    return message.edit({
+        embeds: [message.embeds[0].setTitle('Skipped').setFooter('')]
+    })
 }
 
 export async function composeGuildWelcomeMessageEmbed() {
@@ -182,7 +188,9 @@ export function sendSuccessfullyScrobbledMessageEmbed(track: Track, lastfmUsers:
         successfullyScrobbledEmbed.setThumbnail(track.coverArtUrl)
     }
     
-    return discordChannel.send(successfullyScrobbledEmbed);
+    return discordChannel.send({
+        embeds: [successfullyScrobbledEmbed]
+    });
 }
 
 export async function requestSpotifyApiToken(spotifyApi: SpotifyWebApi) {

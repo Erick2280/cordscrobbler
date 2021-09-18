@@ -19,11 +19,13 @@ export async function execute(message: Message, args: string[], usersService: Us
     
             const dmChannel = await message.author.createDM();
             const collector = new MessageCollector(
-                dmChannel,
-                responseMessage => (
-                    responseMessage.author.id === message.author.id &&
-                    typeof responseMessage.content === 'string'),
-                { time: twoMinutesInMillis, max: 1 }
+                dmChannel, {
+                    filter: responseMessage => (
+                        responseMessage.author.id === message.author.id &&
+                        typeof responseMessage.content === 'string'),
+                    time: twoMinutesInMillis,
+                    max: 1
+                }
             );
         
             collector.on('collect', async responseMessage => {

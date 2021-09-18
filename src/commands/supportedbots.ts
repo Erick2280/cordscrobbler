@@ -24,6 +24,8 @@ export async function execute(message: Message, args: string[], usersService: Us
 
     let messageEmbed = await composeBasicMessageEmbed('Supported bots', messageText);
 
-    message.author.send(messageEmbed);
+    message.author.send({
+        embeds: [messageEmbed]
+    });
 
 }

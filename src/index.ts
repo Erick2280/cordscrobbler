@@ -27,7 +27,15 @@ const spotifyApi = new SpotifyWebApi({
     clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
 });
 
-const client = new Discord.Client();
+const client = new Discord.Client({
+    intents: [new Discord.Intents().add([
+        Discord.Intents.FLAGS.GUILDS,
+        Discord.Intents.FLAGS.GUILD_MESSAGES,
+        Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, // NOTE: remove after replacing interactions using reactions in favor of Buttons API
+        Discord.Intents.FLAGS.DIRECT_MESSAGES,
+        Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS, // NOTE: remove after replacing interactions using reactions in favor of Buttons API
+    ])]
+});
 const dataProvidingService = new DataProvidingService();
 const databaseService = new DatabaseService(firebaseAdmin.firestore());
 const usersService = new UsersService(databaseService);
@@ -90,7 +98,7 @@ client.on('message', async (message) => {
 
 client.on('guildCreate', async (guild: Discord.Guild) => {
     let channel = guild.channels.cache.find(channel =>
-        channel.type === 'text' &&
+        channel.type === 'GUILD_TEXT' &&
         channel.permissionsFor(guild.me).has('SEND_MESSAGES')
     );
 
@@ -99,7 +107,9 @@ client.on('guildCreate', async (guild: Discord.Guild) => {
     }
 
     const welcomeMessage = await utils.composeGuildWelcomeMessageEmbed();
-    channel.send(welcomeMessage); 
+    channel.send({
+        embeds: [welcomeMessage]
+    }); 
 });
 
 console.log('Retrieving data from database...');

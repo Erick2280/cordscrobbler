@@ -25,7 +25,7 @@ export class HydraDataProvider implements DataProvider {
             guildId: message.guild.id,
             timestamp: new Date(),
             channelId: message.member.voice.channel.id,
-            listeningUsersId: message.member.voice.channel.members.keyArray(),
+            listeningUsersId: [...message.member.voice.channel.members.keys()],
             providerName: this.providerName,
         };
     }

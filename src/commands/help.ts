@@ -59,5 +59,7 @@ Some bots require additional configuration. Please send \`${process.env.DISCORD_
         message.reply('I sent the help via DM :)')
     }
 
-    message.author.send(messageEmbed);
+    message.author.send({
+        embeds: [messageEmbed]
+    });
 }

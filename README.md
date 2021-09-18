@@ -40,7 +40,7 @@ Just [click here to add to your server](https://discord.com/oauth2/authorize?cli
 
 ## Running from source
 
-This project uses [discord.js](https://discord.js.org/) and needs [Node.js](https://nodejs.org) LTS to be installed on your machine.
+This project uses [discord.js](https://discord.js.org/) and needs [Node.js](https://nodejs.org) v16 to be installed on your machine.
 
 First, install the project dependencies running:
 
