@@ -41,5 +41,8 @@
     "erlpack": "github:discord/erlpack",
     "utf-8-validate": "^5.0.7",
     "zlib-sync": "^0.1.7"
+  },
+  "engines": {
+    "node": "16.x"
   }
 }
