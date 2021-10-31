@@ -8,7 +8,7 @@
 ![Build status](https://github.com/Erick2280/cordscrobbler/workflows/build/badge.svg)
 
 <p>
-    <a href="https://discord.com/oauth2/authorize?client_id=739266400476201061&permissions=2147994688&scope=bot">
+    <a href="https://discord.com/oauth2/authorize?client_id=739266400476201061&permissions=2147994688&scope=bot" target="_blank" rel="noreferrer">
         <img width="400" src="./assets/add-to-your-server-button.svg" alt="Add to your server"/>
     </a>
 </p>
