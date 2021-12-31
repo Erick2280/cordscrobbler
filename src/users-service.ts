@@ -170,6 +170,7 @@ export class UsersService {
     async dispatchScrobble(track: Track, playbackData: PlaybackData, messageChannel: TextChannel, nowScrobblingMessage: Message) {
         const lastfmUsers: string[] = [];
         const skippedUsers = nowScrobblingMessage.reactions.cache.get('🚫').users.cache;
+        console.log(`QUEUE SERVICE: Starting scrobble dispatching to Last.fm for reference ${playbackData.timestamp} / ${playbackData.channelId} / ${playbackData.guildId}`);
 
         if (this.channelLastScrobbleCandidateTimestamp.get(playbackData.channelId) === playbackData.timestamp) {
             const scrobblingRequestPromises: Promise<void>[] = [];
@@ -190,10 +191,13 @@ export class UsersService {
 
             await utils.deleteMessage(nowScrobblingMessage);
             await utils.sendSuccessfullyScrobbledMessageEmbed(track, lastfmUsers, messageChannel);
-
+            console.log(`QUEUE SERVICE: Scrobbling successful for reference ${playbackData.timestamp} / ${playbackData.channelId} / ${playbackData.guildId}`);
+            
         } else {
+            console.log(`QUEUE SERVICE: Scrobbling skipped for reference ${playbackData.timestamp} / ${playbackData.channelId} / ${playbackData.guildId}`);
             await utils.editEmbedMessageToSkipped(nowScrobblingMessage);
         }
+        console.log(`QUEUE SERVICE: Timestamp table size at ${this.channelLastScrobbleCandidateTimestamp.size}`);
 
     }
 }

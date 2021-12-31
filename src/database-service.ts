@@ -19,6 +19,7 @@ export class DatabaseService {
     }
 
     async setRegisteredUser(registeredUser: RegisteredUser) {
+        console.log(`DATABASE: New user registered`);
         await this.registeredUsersRef.doc(registeredUser.discordUserId).set(registeredUser);
     }
 
@@ -32,6 +33,7 @@ export class DatabaseService {
     }
 
     async deleteRegisteredUser(discordUserId: string) {
+        console.log(`DATABASE: User deleted`);
         await this.registeredUsersRef.doc(discordUserId).delete();
     }
 }

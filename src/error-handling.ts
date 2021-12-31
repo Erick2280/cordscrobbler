@@ -2,6 +2,9 @@ import { Client, Message } from 'discord.js';
 import { UsersService } from './users-service';
 
 export function returnUserFriendlyErrorMessage(error: Error, message: Message, usersService: UsersService, client: Client) {
+    console.log(`ERROR HANDLING: ${error.message} triggered, dumping message below:`);
+    console.log(message);
+
     switch (error.message) {
         case 'LastfmServiceUnavailable':
             message.author.send(`Sorry, seems like the Last.fm service is unavailable. Please try again later :/`);
