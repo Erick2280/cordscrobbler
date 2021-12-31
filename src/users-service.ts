@@ -191,7 +191,7 @@ export class UsersService {
 
             await utils.deleteMessage(nowScrobblingMessage);
             await utils.sendSuccessfullyScrobbledMessageEmbed(track, lastfmUsers, messageChannel);
-            console.log(`QUEUE SERVICE: Scrobbling successful for reference ${playbackData.timestamp} / ${playbackData.channelId} / ${playbackData.guildId}`);
+            console.log(`QUEUE SERVICE: Scrobbling successful (${lastfmUsers.length} users) for reference ${playbackData.timestamp} / ${playbackData.channelId} / ${playbackData.guildId}`);
             
         } else {
             console.log(`QUEUE SERVICE: Scrobbling skipped for reference ${playbackData.timestamp} / ${playbackData.channelId} / ${playbackData.guildId}`);
