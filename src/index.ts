@@ -81,11 +81,11 @@ client.on('message', async (message) => {
     if (message.channel instanceof Discord.TextChannel && message.author.bot) {
         const playbackData = dataProvidingService.lookForPlaybackData(message);
         if (playbackData) {
-            console.log(`SCROBBLING: PlaybackData created for reference ${playbackData.timestamp} / ${playbackData.channelId} / ${playbackData.guildId}`);
+            console.log(`SCROBBLING: PlaybackData created from ${playbackData.providerName} for reference ${playbackData.timestamp.toISOString()} / ${playbackData.channelId} / ${playbackData.guildId}`);
             const track = await utils.parseTrack(playbackData, spotifyApi);
-            console.log(`SCROBBLING: Track parsing done for reference ${playbackData.timestamp} / ${playbackData.channelId} / ${playbackData.guildId}`);
+            console.log(`SCROBBLING: Track parsing done for reference ${playbackData.timestamp.toISOString()} / ${playbackData.channelId} / ${playbackData.guildId}`);
             await usersService.addToScrobbleQueue(track, playbackData, message.channel);
-            console.log(`SCROBBLING: Queueing done for reference ${playbackData.timestamp} / ${playbackData.channelId} / ${playbackData.guildId}`);
+            console.log(`SCROBBLING: Queueing done for reference ${playbackData.timestamp.toISOString()} / ${playbackData.channelId} / ${playbackData.guildId}`);
         }
     }
 
