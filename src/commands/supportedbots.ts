@@ -5,7 +5,7 @@ import { composeBasicMessageEmbed } from '../utils';
 
 export const data = {
     name: 'supportedbots',
-    description: 'View supported bots and additional configuration help',
+    description: 'View supported bots and additional configuration help.',
     aliases: ['bots'],
     args: false
 };
