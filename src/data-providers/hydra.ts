@@ -7,7 +7,7 @@ export class HydraDataProvider implements DataProvider {
     readonly possibleUsernames = ['Hydra', 'Hydra 2', 'Hydra 3', 'Hydra Staging']
 
     isHandleableMessage(message: Message): boolean {
-        return (this.possibleUsernames.includes(message.author.username)) && (message?.embeds[0]?.title === 'Now playing');
+        return (message?.member?.voice?.channel?.id) && (this.possibleUsernames.includes(message.author.username)) && (message?.embeds[0]?.title === 'Now playing');
     }
 
     getPlaybackDataFromMessage(message: Message): PlaybackData {

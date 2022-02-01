@@ -7,7 +7,7 @@ export class RythmDataProvider implements DataProvider {
     readonly possibleUsernames = ['Rythm', 'Rythm 2', 'Rythm 3', 'Rythm 4', 'Rythm 5']
 
     isHandleableMessage(message: Message): boolean {
-        return (this.possibleUsernames.includes(message.author.username)) && (message?.embeds[0]?.title === 'Now Playing 🎵'); // TODO or skipped
+        return (message?.member?.voice?.channel?.id) && (this.possibleUsernames.includes(message.author.username)) && (message?.embeds[0]?.title === 'Now Playing 🎵'); // TODO or skipped
     }
 
     getPlaybackDataFromMessage(message: Message): PlaybackData {

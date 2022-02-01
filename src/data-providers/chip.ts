@@ -6,7 +6,7 @@ export class ChipDataProvider implements DataProvider {
     readonly providerAdditionalInfo = 'Out-of-the-box support.';
 
     isHandleableMessage(message: Message): boolean {
-        return (message.author.username === 'Chip') && (message?.embeds[0]?.author?.name === '|  Now playing');
+        return (message?.member?.voice?.channel?.id) && (message.author.username === 'Chip') && (message?.embeds[0]?.author?.name === '|  Now playing');
     }
 
     getPlaybackDataFromMessage(message: Message): PlaybackData {

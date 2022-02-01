@@ -7,7 +7,7 @@ export class JockieDataProvider implements DataProvider {
     readonly possibleUsernames = ['Jockie Music', 'Jockie Music (1)', 'Jockie Music (2)', 'Jockie Music (3)', 'Jockie Music Premium', 'Jockie Music Premium (1)', 'Jockie Music Premium (2)', 'Jockie Music Premium (3)', 'Jockie Music Premium (4)']
 
     isHandleableMessage(message: Message): boolean {
-        return (this.possibleUsernames.includes(message.author.username)) && (message?.embeds[0]?.description?.startsWith?.('Started playing '));
+        return (message?.member?.voice?.channel?.id) && (this.possibleUsernames.includes(message.author.username)) && (message?.embeds[0]?.description?.startsWith?.('Started playing '));
     }
 
     getPlaybackDataFromMessage(message: Message): PlaybackData {

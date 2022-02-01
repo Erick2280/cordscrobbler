@@ -6,7 +6,7 @@ export class GroovyDataProvider implements DataProvider {
     readonly providerAdditionalInfo = 'Out-of-the-box support.';
 
     isHandleableMessage(message: Message): boolean {
-        return (message.author.username === 'Groovy') && (message?.embeds[0]?.title === 'Now playing');
+        return (message?.member?.voice?.channel?.id) && (message.author.username === 'Groovy') && (message?.embeds[0]?.title === 'Now playing');
     }
 
     getPlaybackDataFromMessage(message: Message): PlaybackData {

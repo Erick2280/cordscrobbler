@@ -7,7 +7,7 @@ export class TempoDataProvider implements DataProvider {
     readonly titlePaddingIndex = 9
 
     isHandleableMessage(message: Message): boolean {
-        return (message.author.username.startsWith('Tempo')) && (message?.embeds[0]?.author?.name?.startsWith('Playing: '));
+        return (message?.member?.voice?.channel?.id) && (message.author.username.startsWith('Tempo')) && (message?.embeds[0]?.author?.name?.startsWith('Playing: '));
     }
 
     getPlaybackDataFromMessage(message: Message): PlaybackData {
