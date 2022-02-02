@@ -154,17 +154,20 @@ export class UsersService {
         const timeUntilScrobbling = Math.min(
             Math.floor(track.durationInMillis / 2), fourMinutesInMillis
         );
+        try {
+            const nowScrobblingMessage = await utils.sendNowScrobblingMessageEmbed(track, messageChannel);
 
-        const nowScrobblingMessage = await utils.sendNowScrobblingMessageEmbed(track, messageChannel);
+            if (!nowScrobblingMessage) return
         
-        for (const userId of playbackData.listeningUsersId) {
-            const registeredUser = this.registeredUsers.find(x => x.discordUserId === userId)
-            if (registeredUser?.isScrobbleOn) {
-                this.lastfmService.updateNowPlaying(track, registeredUser.lastfmSessionKey).catch((error) => {console.error(error)})
+            for (const userId of playbackData.listeningUsersId) {
+                const registeredUser = this.registeredUsers.find(x => x.discordUserId === userId)
+                if (registeredUser?.isScrobbleOn) {
+                    this.lastfmService.updateNowPlaying(track, registeredUser.lastfmSessionKey).catch((error) => {console.error(error)})
+                }
             }
-        }
-        
-        setTimeout(() => {this.dispatchScrobble(track, playbackData, messageChannel, nowScrobblingMessage)}, timeUntilScrobbling)
+            
+            setTimeout(() => {this.dispatchScrobble(track, playbackData, messageChannel, nowScrobblingMessage)}, timeUntilScrobbling)
+        } catch {}
     }
 
     async dispatchScrobble(track: Track, playbackData: PlaybackData, messageChannel: TextChannel, nowScrobblingMessage: Message) {

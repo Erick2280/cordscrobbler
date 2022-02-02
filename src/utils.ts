@@ -116,8 +116,9 @@ export async function sendNowScrobblingMessageEmbed(track: Track, discordChannel
 
     nowScrobblingMessageEmbed.setFooter('To skip scrobbling of this track for your account, react this message with 🚫.')
 
-    const nowScrobblingMessage = await discordChannel.send(nowScrobblingMessageEmbed);
-    await nowScrobblingMessage.react('🚫')
+    const nowScrobblingMessage = await discordChannel.send(nowScrobblingMessageEmbed).catch(() => {});
+
+    if (nowScrobblingMessage) await nowScrobblingMessage.react('🚫')
 
     return nowScrobblingMessage;
 }
