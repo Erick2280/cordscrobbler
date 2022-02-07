@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "genversion dist/lib/version.js && tsc",
-    "start": "node .",
+    "start": "node --unhandled-rejections=none .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "ts-node-dev --ignore-watch node_modules src/index.ts"
   },
